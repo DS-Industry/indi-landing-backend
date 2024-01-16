@@ -12,6 +12,11 @@ async function bootstrap() {
   const PORT = configService.get<number>('port');
   const environment = configService.get<string>('NODE_ENV');
   const appName = configService.get<string>('appName');
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // if you need to send cookies or credentials,
+  });
   await app.listen(PORT);
   app.use(require('body-parser').json())
 
