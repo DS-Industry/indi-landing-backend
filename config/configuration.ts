@@ -8,4 +8,7 @@ export const configuration = () => ({
         key_id: process.env.RP_KEY_ID,
         key_secret: process.env.RP_KEY_SECRET,
     },
+    gvlSource: process.env.GVL_SOURCE,
+    dsCloudUrl: process.env.DS_CLOUD_URL,
+    dsCloudApiKey: process.env.DS_CLOUD_API_KEY,
 });

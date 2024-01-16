@@ -1,5 +1,6 @@
 import {Body, Controller, HttpCode, Post} from "@nestjs/common";
 import {OrderService} from "./order.service";
+import {CheckOrderDto} from "./dto/check-order.dto";
 
 @Controller('order')
 export class OrderController{
@@ -19,7 +20,7 @@ export class OrderController{
 
     @Post('check')
     @HttpCode(201)
-    async check(@Body() data: {response:{razorpay_payment_id: string, razorpay_order_id: string, razorpay_signature: string}, post: number}){
+    async check(@Body() data: CheckOrderDto){
         try {
             return await this.orderService.check(data);
         } catch (err){

@@ -1,10 +1,14 @@
+import { HttpService } from '@nestjs/axios';
 import {Injectable} from "@nestjs/common";
 import { ConfigService } from '@nestjs/config';
-import crypto from "crypto";
+import { AxiosResponse } from 'axios';
+import {map} from "rxjs";
 
 @Injectable()
 export class OrderService{
-    constructor(private readonly configService: ConfigService) {
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly httpService: HttpService,) {
     }
 
     async create(amount: number){
@@ -39,12 +43,36 @@ export class OrderService{
             .digest('hex');
         console.log('sig received', data.response.razorpay_signature);
         console.log('sig generated', expectedSignature);
+        console.log(data.deviceId);
+        console.log(data.amount);
         let response = {'signatureIsValid':'false'}
-        if(expectedSignature === data.response.razorpay_signature)
-            response= {'signatureIsValid':'true'}
-        else
+        if(expectedSignature === data.response.razorpay_signature) {
+            response = {'signatureIsValid': 'true'}
+            const options = this.setHeaders();
+            this.httpService
+                .post(
+                `${this.configService.get<string>('dsCloudUrl')}/external/mobile/write/${data.deviceId}`,
+                    {
+                        GVLCardNum: 0,
+                        GVLCardSum: data.amount,
+                        GVLSource: this.configService.get<string>('gvlSource'),
+                    },
+                    options,
+            ).pipe(
+                map((axiosResponse: AxiosResponse) => {
+                    return axiosResponse.data;
+                }),
+            );
+        }else
             response= {'signatureIsValid':'false'}
         return response
+    }
 
+    private setHeaders(): { headers: { akey: string } } {
+        return {
+            headers: {
+                akey: this.configService.get<string>('dsCloudApiKey'),
+            },
+        };
     }
 }
