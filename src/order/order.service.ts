@@ -1,5 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import { ConfigService } from '@nestjs/config';
+import crypto from "crypto";
 
 @Injectable()
 export class OrderService{
@@ -26,5 +27,24 @@ export class OrderService{
                 }
             });
         });
+    }
+
+    async check(data: any){
+        const body = data.response.razorpay_order_id + '|' + data.response.razorpay_payment_id;
+        console.log(body)
+
+        const crypto = require('crypto');
+        const expectedSignature = crypto.createHmac('sha256', this.configService.get<string>('rp.key_secret'))
+            .update(body.toString())
+            .digest('hex');
+        console.log('sig received', data.response.razorpay_signature);
+        console.log('sig generated', expectedSignature);
+        let response = {'signatureIsValid':'false'}
+        if(expectedSignature === data.response.razorpay_signature)
+            response= {'signatureIsValid':'true'}
+        else
+            response= {'signatureIsValid':'false'}
+        return response
+
     }
 }

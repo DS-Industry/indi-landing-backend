@@ -7,9 +7,9 @@ export class OrderController{
 
     @Post('create')
     @HttpCode(201)
-    async create(@Body() amount: { amount: number }){
+    async create(@Body() data: { amount: number }){
         try {
-            const orderId = await this.orderService.create(amount.amount);
+            const orderId = await this.orderService.create(data.amount);
             console.log(orderId)
             return { orderId };
         } catch (err){
@@ -17,4 +17,13 @@ export class OrderController{
         }
     }
 
+    @Post('check')
+    @HttpCode(201)
+    async check(@Body() data: {response:{razorpay_payment_id: string, razorpay_order_id: string, razorpay_signature: string}, post: number}){
+        try {
+            return await this.orderService.check(data);
+        } catch (err){
+            console.log(err)
+        }
+    }
 }
