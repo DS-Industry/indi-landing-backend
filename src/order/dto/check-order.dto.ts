@@ -6,4 +6,5 @@ export class CheckOrderDto{
     };
     deviceId: number;
     amount: number;
+    orderId: string;
 }

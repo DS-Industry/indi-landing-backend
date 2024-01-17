@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import {Injectable} from "@nestjs/common";
 import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
-import {map} from "rxjs";
+import {map, Observable, Subscription} from "rxjs";
 
 @Injectable()
 export class OrderService{
@@ -34,35 +34,35 @@ export class OrderService{
     }
 
     async check(data: any){
-        const body = data.response.razorpay_order_id + '|' + data.response.razorpay_payment_id;
-        console.log(body)
+        const body = data.orderId + '|' + data.response.razorpay_payment_id;
 
         const crypto = require('crypto');
         const expectedSignature = crypto.createHmac('sha256', this.configService.get<string>('rp.key_secret'))
             .update(body.toString())
             .digest('hex');
-        console.log('sig received', data.response.razorpay_signature);
-        console.log('sig generated', expectedSignature);
-        console.log(data.deviceId);
-        console.log(data.amount);
         let response = {'signatureIsValid':'false'}
         if(expectedSignature === data.response.razorpay_signature) {
             response = {'signatureIsValid': 'true'}
             const options = this.setHeaders();
-            this.httpService
-                .post(
+            const requestObservable: Observable<any> = this.httpService.post(
                 `${this.configService.get<string>('dsCloudUrl')}/external/mobile/write/${data.deviceId}`,
-                    {
-                        GVLCardNum: 0,
-                        GVLCardSum: data.amount,
-                        GVLSource: this.configService.get<string>('gvlSource'),
-                    },
-                    options,
-            ).pipe(
-                map((axiosResponse: AxiosResponse) => {
-                    return axiosResponse.data;
-                }),
+                {
+                    GVLCardNum: 0,
+                    GVLCardSum: data.amount,
+                    GVLSource: this.configService.get<string>('gvlSource'),
+                },
+                options
             );
+            const subscription: Subscription = requestObservable.subscribe({
+                next: (response: AxiosResponse) => {
+                    // Обработка успешного ответа здесь
+                    console.log(response.data);
+                },
+                error: (error) => {
+                    // Обработка ошибки здесь
+                    console.error('Ошибка при выполнении http-запроса', error);
+                }
+            });
         }else
             response= {'signatureIsValid':'false'}
         return response
