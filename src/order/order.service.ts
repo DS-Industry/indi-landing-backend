@@ -26,8 +26,10 @@ export class OrderService{
         return new Promise((resolve, reject) => {
             instance.orders.create(options, function (err, order) {
                 if (err) {
+                    console.log('err')
                     reject(err);
                 } else {
+                    console.log(order)
                     resolve(order.id);
                 }
             });
