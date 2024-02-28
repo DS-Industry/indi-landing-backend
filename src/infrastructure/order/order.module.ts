@@ -1,12 +1,11 @@
-import {Module} from "@nestjs/common";
-import {OrderController} from "../../api/order/order.controller";
-import {OrderUsecase} from "../../aplication/usecases/order/order.usecase";
+import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { OrderUsecase } from '../../aplication/usecases/order/order.usecase';
+import { OrderController } from '../../api/order/order.controller';
 
 @Module({
-    imports:[HttpModule],
-    controllers: [OrderController],
-    providers: [OrderUsecase],
-    exports: [OrderUsecase],
+  imports: [HttpModule],
+  controllers: [OrderController],
+  providers: [OrderUsecase],
 })
-export class OrderModule{}
+export class OrderModule {}

@@ -4,10 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientEntity } from '../account/entity/client.entity';
 import { CardEntity } from '../account/entity/card.entity';
 import { TariffEntity } from '../account/entity/tariff.entity';
-import {PasswordEntity} from "../account/entity/password.entity";
-import {SubscribeEntity} from "../subscribe/entity/subscribe.entity";
-
-
+import { PasswordEntity } from '../account/entity/password.entity';
+import { SubscribeEntity } from '../subscribe/entity/subscribe.entity';
 
 @Module({
   imports: [
