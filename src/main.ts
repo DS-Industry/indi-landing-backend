@@ -34,7 +34,6 @@ async function bootstrap() {
   await app.listen(PORT);
   app.use(require('body-parser').json())
 
-
   console.log(
       `Application ${appName} ready to receive request in PORT - ${PORT}`,
   );
