@@ -45,6 +45,7 @@ export class SubscribeUsecase {
             await this.subscribeRepository.update(oldSubscribe, client);
         }
         return {
+            linkForPayment: subscribe.short_url,
             status: 'Success'
         }
     }
@@ -76,5 +77,15 @@ export class SubscribeUsecase {
             await this.subscribeRepository.update(subscribe, client);
             console.log("Change status " + subscribe.subscribeId + " closed")
         }
+    }
+
+    async getAllPlans(): Promise<any> {
+        const Razorpay = require('razorpay')
+        const instance = new Razorpay({
+            key_id: this.configService.get<string>('rp.key_id'),
+            key_secret: this.configService.get<string>('rp.key_secret'),
+        });
+
+        return instance.plans.all()
     }
 }

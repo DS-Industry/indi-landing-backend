@@ -14,7 +14,7 @@ export class OrderController{
     async create(@Body() createOrder: CreateOrderDto, @Request() req: any){
         try {
             const orderId = await this.OrderUsecase.create(createOrder.amount);
-            console.log(orderId)
+            console.log('Create order' + orderId)
             return { orderId };
         } catch (e){
             if(e instanceof InvalidAmountException){

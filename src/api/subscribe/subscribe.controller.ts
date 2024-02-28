@@ -48,4 +48,25 @@ export class SubscribeController {
             });
         }
     }
+
+    @Get('/plans')
+    @HttpCode(201)
+    async getAllPlans(): Promise<any> {
+        try {
+            const data = await this.subscribeUsecase.getAllPlans();
+            const modifiedData = data.items.map(item => {
+                return {
+                    id: item.id,
+                    name: item.item.name,
+                    amount: item.item.amount
+                };
+            });
+            return modifiedData;
+        } catch (e) {
+            throw new CustomHttpException({
+                message: e.message,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
+            });
+        }
+    }
 }

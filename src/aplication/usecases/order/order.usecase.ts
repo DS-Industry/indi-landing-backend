@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import {map, Observable, Subscription} from "rxjs";
 import crypto from "crypto";
+import {CheckOrderDto} from "../../../api/order/dto/check-order.dto";
 
 @Injectable()
 export class OrderUsecase {
@@ -36,7 +37,7 @@ export class OrderUsecase {
         });
     }
 
-    async check(data: any){
+    async check(data: CheckOrderDto){
         try {
             const body = data.orderId + '|' + data.response.razorpay_payment_id;
 
@@ -46,6 +47,7 @@ export class OrderUsecase {
                 .digest('hex');
             let response = {'signatureIsValid': 'false'}
             if (expectedSignature === data.response.razorpay_signature) {
+                console.log('signatureIsValid: true')
                 response = {'signatureIsValid': 'true'}
                 const options = this.setHeaders();
                 const requestObservable: Observable<any> = this.httpService.post(
@@ -59,10 +61,10 @@ export class OrderUsecase {
                 );
                 const subscription: Subscription = requestObservable.subscribe({
                     next: (response: AxiosResponse) => {
-                        console.log(response.data);
+                        console.log('Response from the device to order ' + data.orderId + ': ' + response.data);
                     },
                     error: (error) => {
-                        console.error('Ошибка при выполнении http-запроса', error);
+                        console.error('Error executing http request', error);
                     }
                 });
             } else
@@ -77,6 +79,7 @@ export class OrderUsecase {
                 .digest('hex');
             let response = {'signatureIsValid': 'false'}
             if (expectedSignature === data.response.razorpay_signature) {
+                console.log('signatureIsValid: true')
                 response = {'signatureIsValid': 'true'}
                 const options = this.setHeaders();
                 const requestObservable: Observable<any> = this.httpService.post(
@@ -90,10 +93,10 @@ export class OrderUsecase {
                 );
                 const subscription: Subscription = requestObservable.subscribe({
                     next: (response: AxiosResponse) => {
-                        console.log(response.data);
+                        console.log('Response from the device to order ' + data.orderId + ': ' + response.data);
                     },
                     error: (error) => {
-                        console.error('Ошибка при выполнении http-запроса', error);
+                        console.error('Error executing http request', error);
                     }
                 });
             } else
