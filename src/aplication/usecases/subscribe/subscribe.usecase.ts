@@ -36,14 +36,16 @@ export class SubscribeUsecase {
             status: subscribe.status,
         }
 
-        if(!oldSubscribe) {
-            await this.subscribeRepository.create(subscribeAdd, client);
+        let newSubscribe;
+        if (!oldSubscribe) {
+            newSubscribe = await this.subscribeRepository.create(subscribeAdd, client);
         } else {
             await instance.subscriptions.cancel(oldSubscribe.subscribeId);
             oldSubscribe.subscribeId = subscribe.id;
             oldSubscribe.status = subscribe.status;
-            await this.subscribeRepository.update(oldSubscribe, client);
+            newSubscribe = await this.subscribeRepository.update(oldSubscribe, client);
         }
+        client.addSubscribe(newSubscribe)
         return {
             linkForPayment: subscribe.short_url,
             status: 'Success'
@@ -87,5 +89,23 @@ export class SubscribeUsecase {
         });
 
         return instance.plans.all()
+    }
+
+    async getSubscribeInfo(client: Client){
+        const subscribe = await this.subscribeRepository.findOneByClient(client.clientId);
+        if(!subscribe) return null;
+        const Razorpay = require('razorpay')
+        const instance = new Razorpay({
+            key_id: this.configService.get<string>('rp.key_id'),
+            key_secret: this.configService.get<string>('rp.key_secret'),
+        });
+        const plan = await instance.plans.fetch((await instance.subscriptions.fetch(subscribe.subscribeId)).plan_id)
+        return {
+            subscribeId: subscribe.subscribeId,
+            dateDebiting: subscribe.dateDebiting,
+            status: subscribe.status,
+            amount: plan.item.amount,
+            name: plan.item.name,
+        }
     }
 }

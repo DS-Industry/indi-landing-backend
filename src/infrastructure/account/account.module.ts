@@ -11,6 +11,7 @@ import { DateModule } from '../services/date/date.module';
 import { TariffEntity } from './entity/tariff.entity';
 import {PasswordEntity} from "./entity/password.entity";
 import {PasswordRepository} from "./repository/password.repository";
+import {SubscribeEntity} from "../subscribe/entity/subscribe.entity";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {PasswordRepository} from "./repository/password.repository";
       ClientEntity,
       TariffEntity,
       PasswordEntity,
+      SubscribeEntity,
     ]),
     DateModule,
   ],

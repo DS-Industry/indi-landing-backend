@@ -7,6 +7,8 @@ import { ClientEntity } from '../../../../infrastructure/account/entity/client.e
 import { CardEntity } from '../../../../infrastructure/account/entity/card.entity';
 import { ShortClientDto } from '../dto/short-client.dto';
 import {Password} from "../../password/model/password";
+import {Subscribe} from "../../../subscribe/model/subscribe.model";
+import {InfoSubscribeDto} from "../dto/info-subscribe.dto";
 
 export class Client {
   clientId?: number;
@@ -25,6 +27,7 @@ export class Client {
   refreshToken?: string;
   cards?: Card[];
   password?: Password;
+  subscribe?: Subscribe;
 
   private constructor(
     name: string,
@@ -44,6 +47,7 @@ export class Client {
       activationDate,
       genderId,
       password,
+      subscribe,
     }: {
       clientId?: number;
       email?: string;
@@ -55,6 +59,7 @@ export class Client {
       activationDate?: Date;
       genderId?: GenderType;
       password?: Password;
+      subscribe?: Subscribe;
     },
   ) {
     this.name = name;
@@ -73,15 +78,17 @@ export class Client {
     this.genderId = genderId;
     this.clientId = clientId
     this.password = password;
+    this.subscribe = subscribe;
   }
 
   public static create(data: ICreateClientDto): Client {
-    const { rawPhone, clientType, refreshToken, cards, password } = data;
+    const { rawPhone, clientType, refreshToken, cards, password, subscribe } = data;
     const phone: string = this.formatPhone(rawPhone);
     const name: string = this.generateDefaultName(phone);
     return new Client(name, rawPhone, phone, clientType, refreshToken, 1, {
       cards,
       password,
+      subscribe
     });
   }
 
@@ -92,6 +99,10 @@ export class Client {
 
   public addPassword(password: Password): void {
     if (!this.password) this.password = password;
+  }
+
+  public addSubscribe( subscribe: Subscribe ): void{
+    if(!this.subscribe) this.subscribe = subscribe;
   }
 
   public getCard(): Card {
@@ -122,7 +133,6 @@ export class Client {
     } else {
       mainCard = this.cards[0];
     }
-
     return {
       id: this.clientId,
       name: this.name,
@@ -136,10 +146,9 @@ export class Client {
         balance: mainCard.balance,
         isLocked: mainCard.isLocked,
         dateBegin: mainCard.dateBegin,
-      },
+      }
     };
   }
-
   private static generateDefaultName(correctPhone: string): string {
     return `Onvi ${correctPhone}`;
   }
@@ -166,6 +175,7 @@ export class Client {
       refreshToken,
       cards,
       password,
+      subscribe,
     } = entity;
 
     if (cards) {
@@ -177,6 +187,11 @@ export class Client {
     let pasModels: Password;
     if (password) {
       pasModels = Password.fromEntity(password)
+    }
+
+    let subModel;
+    if (subscribe) {
+      subModel = Subscribe.fromEntity(subscribe)
     }
     const client = new Client(
       name,
@@ -196,6 +211,7 @@ export class Client {
         genderId,
         cards: cardModels,
         password: pasModels,
+        subscribe: subModel,
       },
     );
     return client;

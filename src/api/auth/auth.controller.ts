@@ -27,6 +27,7 @@ import { RefreshRequestDto } from './dto/refresh-request.dto';
 import { RefreshResponseDto } from './dto/response/refresh-response.dto';
 import { use } from 'passport';
 import { CustomHttpException } from '../../infrastructure/common/exceptions/custom-http.exception';
+import {SubscribeUsecase} from "../../aplication/usecases/subscribe/subscribe.usecase";
 
 @Controller('auth')
 export class AuthController {

@@ -5,6 +5,7 @@ import {CreateSubscribeDto} from "./dto/create-subscribe.dto";
 import {SubscribeUsecase} from "../../aplication/usecases/subscribe/subscribe.usecase";
 import {SubscribeDto} from "../../aplication/usecases/subscribe/dto/subscribe.dto";
 import {ReplenishmentDto} from "./dto/replenishment.dto";
+import {InfoSubscribeDto} from "../../domain/account/client/dto/info-subscribe.dto";
 
 @Controller('subscribe')
 export class SubscribeController {
@@ -62,6 +63,22 @@ export class SubscribeController {
                 };
             });
             return modifiedData;
+        } catch (e) {
+            throw new CustomHttpException({
+                message: e.message,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
+            });
+        }
+    }
+
+    @Get('/subInfo')
+    @UseGuards(JwtGuard)
+    @HttpCode(201)
+    async getSubscribeInfo(@Request() req: any): Promise<any>{
+        try {
+            const { user } = req;
+
+            return await this.subscribeUsecase.getSubscribeInfo(user);
         } catch (e) {
             throw new CustomHttpException({
                 message: e.message,

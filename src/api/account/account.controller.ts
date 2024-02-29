@@ -16,6 +16,8 @@ import { JwtGuard } from '../../infrastructure/common/guards/jwt.guard';
 import { CustomHttpException } from '../../infrastructure/common/exceptions/custom-http.exception';
 import { AccountNotFoundExceptions } from '../../domain/account/exceptions/account-not-found.exceptions';
 import { UpdateAccountDto } from '../../aplication/usecases/account/dto/update-account.dto';
+import accounts from "razorpay/dist/types/accounts";
+import {SubscribeUsecase} from "../../aplication/usecases/subscribe/subscribe.usecase";
 
 @Controller('account')
 export class AccountController {
