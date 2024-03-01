@@ -108,4 +108,19 @@ export class SubscribeUsecase {
             name: plan.item.name,
         }
     }
+
+    async cancellation(client: Client) {
+        const subscribe = await this.subscribeRepository.findOneByClient(client.clientId);
+        if(!subscribe) return null;
+        const Razorpay = require('razorpay')
+        const instance = new Razorpay({
+            key_id: this.configService.get<string>('rp.key_id'),
+            key_secret: this.configService.get<string>('rp.key_secret'),
+        });
+        await instance.subscriptions.cancel(subscribe.subscribeId);
+        subscribe.status = "closed";
+        subscribe.dateDebiting = null;
+        await this.subscribeRepository.update(subscribe, client);
+        return { status: 'Success' }
+    }
 }

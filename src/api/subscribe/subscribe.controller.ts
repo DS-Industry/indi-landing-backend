@@ -86,4 +86,20 @@ export class SubscribeController {
             });
         }
     }
+
+    @Post('/cancellation')
+    @UseGuards(JwtGuard)
+    @HttpCode(200)
+    async cancellation(@Request() req: any): Promise<any>{
+        try {
+            const { user } = req;
+
+            return await this.subscribeUsecase.cancellation(user);
+        } catch (e) {
+            throw new CustomHttpException({
+                message: e.message,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
+            });
+        }
+    }
 }
