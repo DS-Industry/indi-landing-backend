@@ -99,13 +99,15 @@ export class SubscribeUsecase {
             key_id: this.configService.get<string>('rp.key_id'),
             key_secret: this.configService.get<string>('rp.key_secret'),
         });
-        const plan = await instance.plans.fetch((await instance.subscriptions.fetch(subscribe.subscribeId)).plan_id)
+        const fullSub = await instance.subscriptions.fetch(subscribe.subscribeId);
+        const plan = await instance.plans.fetch(fullSub.plan_id);
         return {
             subscribeId: subscribe.subscribeId,
             dateDebiting: subscribe.dateDebiting,
             status: subscribe.status,
             amount: plan.item.amount,
             name: plan.item.name,
+            payUrl: fullSub.short_url,
         }
     }
 
