@@ -13,6 +13,7 @@ ENV DOMAIN_URL=$DOMAIN_URL
 WORKDIR /certbot
 COPY . /certbot
 
+RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//mirror:\/\/mirrors.ubuntu.com\/mirrors.txt/' /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y gnupg
 RUN apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
