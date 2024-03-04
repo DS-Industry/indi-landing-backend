@@ -1,23 +1,20 @@
 # Dockerfile
 FROM ubuntu:22.04
+
 EXPOSE 6000 80
 
-# Читаем переменные среды из .env
+# читаем переменные среды из .env
 ARG DOMAIN_EMAIL
 ARG DOMAIN_URL
 
-# Устанавливаем переменные среды в переменные
+# устанавливаем переменные среды в переменные
 ENV DOMAIN_EMAIL=$DOMAIN_EMAIL
 ENV DOMAIN_URL=$DOMAIN_URL
 
 WORKDIR /certbot
 COPY . /certbot
+WORKDIR /certbot
 
-RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//mirror:\/\/mirrors.ubuntu.com\/mirrors.txt/' /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install -y gnupg
-RUN apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
-RUN apt-get install -y certbot
 
-# Запускаем скрипт генерации
+# запускаем скрипт генерации
 CMD ["sh", "generate-certificate.sh"]
