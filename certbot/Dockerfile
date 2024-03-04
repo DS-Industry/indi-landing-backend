@@ -15,6 +15,10 @@ WORKDIR /certbot
 COPY . /certbot
 WORKDIR /certbot
 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y gnupg
+RUN apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
 RUN apt-get update
 RUN apt-get -y install certbot
 
