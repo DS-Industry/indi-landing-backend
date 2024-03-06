@@ -15,7 +15,7 @@ async function bootstrap() {
   const environment = configService.get<string>('NODE_ENV');
   const appName = configService.get<string>('appName');
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://pay.moy-ka.com'],
+    origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // if you need to send cookies or credentials,
   });
@@ -31,12 +31,6 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionFilter());
   await app.listen(PORT);
   app.use(require('body-parser').json());
-  app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://ds-industry.github.io");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
-    next();
-  });
 
   console.log(
     `Application ${appName} ready to receive request in PORT - ${PORT}`,
