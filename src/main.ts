@@ -31,6 +31,12 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionFilter());
   await app.listen(PORT);
   app.use(require('body-parser').json());
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "https://ds-industry.github.io");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    next();
+  });
 
   console.log(
     `Application ${appName} ready to receive request in PORT - ${PORT}`,
