@@ -1,11 +1,9 @@
-import {Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Req, Request, UseGuards} from "@nestjs/common";
+import {Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards} from "@nestjs/common";
 import {JwtGuard} from "../../infrastructure/common/guards/jwt.guard";
 import {CustomHttpException} from "../../infrastructure/common/exceptions/custom-http.exception";
 import {CreateSubscribeDto} from "./dto/create-subscribe.dto";
 import {SubscribeUsecase} from "../../aplication/usecases/subscribe/subscribe.usecase";
-import {SubscribeDto} from "../../aplication/usecases/subscribe/dto/subscribe.dto";
 import {ReplenishmentDto} from "./dto/replenishment.dto";
-import {InfoSubscribeDto} from "../../domain/account/client/dto/info-subscribe.dto";
 
 @Controller('subscribe')
 export class SubscribeController {
@@ -55,14 +53,13 @@ export class SubscribeController {
     async getAllPlans(): Promise<any> {
         try {
             const data = await this.subscribeUsecase.getAllPlans();
-            const modifiedData = data.items.map(item => {
+            return data.items.map(item => {
                 return {
                     id: item.id,
                     name: item.item.name,
                     amount: item.item.amount
                 };
             });
-            return modifiedData;
         } catch (e) {
             throw new CustomHttpException({
                 message: e.message,
