@@ -54,10 +54,13 @@ export class SubscribeController {
         try {
             const data = await this.subscribeUsecase.getAllPlans();
             return data.items.map(item => {
+                const roundedPrice = Math.ceil(item.item.amount / 0.4) * 0.4;
+                const fullPrice = roundedPrice * 1.4;
                 return {
                     id: item.id,
                     name: item.item.name,
-                    amount: item.item.amount
+                    amount: item.item.amount,
+                    fullPrice: fullPrice,
                 };
             });
         } catch (e) {
