@@ -54,8 +54,10 @@ export class SubscribeController {
         try {
             const data = await this.subscribeUsecase.getAllPlans();
             return data.items.map(item => {
-                const roundedPrice = Math.ceil(item.item.amount / 40) * 0.4;
-                const fullPrice = roundedPrice * 1.4;
+                const roundedPrice = Math.ceil(item.item.amount / 60);
+                let roundedPriceStr = roundedPrice.toString();
+                roundedPriceStr = roundedPriceStr.slice(0, -1) + '0';
+                const fullPrice = parseFloat(roundedPriceStr);
                 return {
                     id: item.id,
                     name: item.item.name,
