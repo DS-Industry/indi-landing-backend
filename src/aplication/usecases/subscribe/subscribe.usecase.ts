@@ -48,6 +48,7 @@ export class SubscribeUsecase {
         client.addSubscribe(newSubscribe)
         return {
             linkForPayment: subscribe.short_url,
+            subId: subscribe.id,
             status: 'Success'
         }
     }
