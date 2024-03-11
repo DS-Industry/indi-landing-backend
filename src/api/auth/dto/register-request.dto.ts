@@ -17,6 +17,9 @@ export class RegisterRequestDto {
   })
   phone: string;
   @IsString()
+  @IsNotEmpty({ message: 'UniqCard string is required' })
+  uniqNomer: string;
+  @IsString()
   @IsNotEmpty({ message: 'Password number is required' })
   password: string;
   @IsString()

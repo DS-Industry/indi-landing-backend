@@ -10,7 +10,6 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 export class AccountUsecase {
   constructor(
     private readonly accountRepository: IAccountRepository,
-    private readonly dateService: IDate,
   ) {}
 
   async getCardTariff(client: Client): Promise<TariffResponseDto> {

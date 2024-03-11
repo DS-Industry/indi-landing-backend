@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthUsecase } from '../../aplication/usecases/auth/auth.usecase';
 import { AccountModule } from '../account/account.module';
 import { BcryptModule } from '../services/bcrypt/bcrypt.module';
-import { DateModule } from '../services/date/date.module';
 import { EnvConfigModule } from '../config/env-config/env-config.module';
 import { JwtProvider } from '../services/jwt/jwt.provider';
 import { AuthController } from '../../api/auth/auth.controller';
@@ -15,7 +14,6 @@ import { JwtStrategy } from '../common/strategies/jwt.strategy';
   imports: [
     JwtModule,
     AccountModule,
-    DateModule,
     EnvConfigModule,
     BcryptModule,
   ],

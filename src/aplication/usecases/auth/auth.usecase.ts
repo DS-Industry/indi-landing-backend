@@ -5,7 +5,6 @@ import {
   IJwtServicePayload,
 } from '../../../domain/auth/adapters/jwt.interface';
 import { IDate } from '../../../infrastructure/common/interfaces/date.interface';
-import { OTP_EXPIRY_TIME } from '../../../infrastructure/common/constants/constants';
 import { IJwtConfig } from '../../../domain/config/jwt-config.interface';
 import { IBcrypt } from '../../../domain/auth/adapters/bcrypt.interface';
 import { ClientType } from '../../../domain/account/client/enum/clinet-type.enum';
@@ -16,6 +15,8 @@ import ms = require('ms');
 import { ICreateClientDto } from '../../../domain/account/client/dto/create-client.dto';
 import { InvalidAccessException } from '../../../domain/auth/exceptions/invalida-token.excpetion';
 import * as otpGenerator from 'otp-generator';
+import {CardNotFoundExceptions} from "../../../domain/account/exceptions/card-not-found.exceptions";
+import {CardHasClientExceptions} from "../../../domain/account/exceptions/card-has-client.exception";
 
 @Injectable()
 export class AuthUsecase {
@@ -33,17 +34,24 @@ export class AuthUsecase {
   constructor(
     private readonly accountRepository: IAccountRepository,
     private readonly jwtService: IJwtService,
-    private readonly dateService: IDate,
     private readonly jwtConfig: IJwtConfig,
     private readonly bcryptService: IBcrypt,
   ) {}
 
   //public async isAuthenticated(phone: string) {}
 
-  public async register(phone: string, password: string, chPassword: string): Promise<any> {
+  public async register(phone: string, uniqNomer: string, password: string, chPassword: string): Promise<any> {
 
     if(password != chPassword) {
       throw new InvalidPasswordException(phone);
+    }
+
+    const card = await this.accountRepository.findOneByDevNomer(uniqNomer);
+    if(!card){
+      throw new CardNotFoundExceptions(uniqNomer);
+    }
+    if(card.clientId !== null){
+      throw new CardHasClientExceptions(uniqNomer);
     }
     //Check if user already exists
     const account = await this.accountRepository.findOneByPhoneNumber(phone);
@@ -65,12 +73,10 @@ export class AuthUsecase {
       refreshToken: refreshToken.token,
     };
 
-    const uniqNomer = await this.generateNomerCard();
-
     //Create card in the database
     const newAccount = await this.accountRepository.create(
       clientData,
-      uniqNomer,
+      card,
       hashPassword,
     );
 

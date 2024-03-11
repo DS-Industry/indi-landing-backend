@@ -1,6 +1,7 @@
 import { CardType } from '../enum/card-type.enum';
 import { ICreateCardDto } from '../dto/create-card.dto';
 import { CardEntity } from '../../../../infrastructure/account/entity/card.entity';
+import {Password} from "../../password/model/password";
 
 export class Card {
   cardId?: number;
@@ -75,6 +76,10 @@ export class Card {
       beginDate,
       { clientId },
     );
+  }
+
+  public addClientId(clientId: number): void {
+    if (!this.clientId) this.clientId = clientId;
   }
 
   public static fromEntity(entity: CardEntity): Card {

@@ -7,7 +7,6 @@ import { DatabaseModule } from './infrastructure/database/database.module';
 import { AccountModule } from './infrastructure/account/account.module';
 import { JwtModule } from './infrastructure/services/jwt/jwt.module';
 import { AuthModule } from './infrastructure/auth/auth.module';
-import { DateModule } from './infrastructure/services/date/date.module';
 import { EnvConfigModule } from './infrastructure/config/env-config/env-config.module';
 import { BcryptModule } from './infrastructure/services/bcrypt/bcrypt.module';
 import { SubscribeModule } from './infrastructure/subscribe/subscribe.module';
@@ -29,7 +28,6 @@ import { OrderModule } from './infrastructure/order/order.module';
     SubscribeModule,
     JwtModule,
     AuthModule,
-    DateModule,
     EnvConfigModule,
     BcryptModule,
     CronModule,

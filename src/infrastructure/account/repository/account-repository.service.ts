@@ -26,21 +26,13 @@ export class AccountRepository implements IAccountRepository {
     private readonly passwordRepository: PasswordRepository,
   ) {}
 
-  async create(clientData: ICreateClientDto, uniqNomer: string, password: string): Promise<any> {
+  async create(clientData: ICreateClientDto, card: Card, password: string): Promise<any> {
     const client: Client = Client.create(clientData);
     const newClient = await this.clientRepository.create(client);
 
-    const cardData: ICreateCardDto = {
-      clientId: newClient.clientId,
-      nomer: uniqNomer,
-      devNomer: uniqNomer,
-      cardTypeId: CardType.ONVI,
-      beginDate: new Date(Date.now()),
-    };
+    card.addClientId(client.clientId);
 
-    const card: Card = Card.create(cardData);
-
-    const newCard = await this.cardRepository.create(card, newClient);
+    const newCard = await this.cardRepository.changeClient(card.cardId, newClient);
 
     client.addCard(newCard);
 

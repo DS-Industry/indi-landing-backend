@@ -68,6 +68,20 @@ export class CardRepository implements ICardRepository {
     return card;
   }
 
+  async changeClient(cardId: number, client: Client): Promise<any> {
+    const clientEntity = ClientRepository.toClientEntity(client);
+    const card = await this.cardRepository.findOne({
+      where: {
+        cardId: cardId,
+      },
+    });
+
+    if (!card) return null;
+    card.client = clientEntity;
+    await this.cardRepository.save(card);
+    return card;
+  }
+
   async zeroingOut(cardId: number): Promise<any>{
     const card = await this.cardRepository.findOne({
       where: {
