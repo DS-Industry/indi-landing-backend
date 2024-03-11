@@ -50,7 +50,7 @@ export class AuthUsecase {
     if(!card){
       throw new CardNotFoundExceptions(uniqNomer);
     }
-    if(card.clientId !== null){
+    if(card.clientId !== null && card.clientId !== undefined){
       throw new CardHasClientExceptions(uniqNomer);
     }
     //Check if user already exists
