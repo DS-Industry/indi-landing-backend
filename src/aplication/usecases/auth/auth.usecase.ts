@@ -46,7 +46,7 @@ export class AuthUsecase {
       throw new InvalidPasswordException(phone);
     }
 
-    const card = await this.accountRepository.findOneByDevNomer(uniqNomer);
+    const card = await this.accountRepository.findOneByNomer(uniqNomer);
     if(!card){
       throw new CardNotFoundExceptions(uniqNomer);
     }

@@ -13,6 +13,7 @@ export abstract class IAccountRepository {
   abstract findOneByPhoneNumber(phone: string): Promise<any>;
   abstract findOneClientById(clientId: number): Promise<any>;
   abstract findOneByDevNomer(uniqNomer: string): Promise<any>;
+  abstract findOneByNomer(uniqNomer: string): Promise<any>;
   abstract findPasswordByPhoneNumber(phone: string): Promise<any>;
   abstract changeTypeCard(cardId: number, newCardTypeId: number): Promise<any>;
   abstract setRefreshToken(phone: string, token: string): Promise<any>;

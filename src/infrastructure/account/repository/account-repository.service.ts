@@ -107,6 +107,18 @@ export class AccountRepository implements IAccountRepository {
     return card;
   }
 
+  async findOneByNomer(uniqNomer: any): Promise<any> {
+    //TODO
+    // 1) Find customer by phone number
+
+    const card = await this.cardRepository.findOneByNomer(uniqNomer);
+
+    if (!card) return null;
+
+    return card;
+  }
+
+
   async changeTypeCard(cardId: number, newCardTypeId: number): Promise<any> {
     return await this.cardRepository.changeType(cardId, newCardTypeId);
   }

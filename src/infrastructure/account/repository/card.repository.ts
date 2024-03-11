@@ -55,6 +55,17 @@ export class CardRepository implements ICardRepository {
     return Card.fromEntity(card);
   }
 
+  async findOneByNomer(nomer: string): Promise<Card> {
+    const card = await this.cardRepository.findOne({
+      where: {
+        nomer: nomer,
+      },
+    });
+
+    if (!card) return null;
+    return Card.fromEntity(card);
+  }
+
   async changeType(cardId: number, newCardTypeId: number): Promise<any> {
     const card = await this.cardRepository.findOne({
       where: {
