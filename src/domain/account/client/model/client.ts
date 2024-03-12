@@ -20,7 +20,7 @@ export class Client {
   insDate?: Date;
   updDate?: Date;
   clientTypeId: ClientType;
-  isActivated?: number;
+  isActivated: number;
   userOnvi: number;
   activatedDate?: Date;
   genderId?: GenderType;
@@ -35,6 +35,7 @@ export class Client {
     phone: string,
     clientType: ClientType,
     refreshToken: string,
+    isActivated: number,
     userOnvi: number,
     {
       clientId,
@@ -43,7 +44,6 @@ export class Client {
       cards,
       insDate,
       updDate,
-      isActivated,
       activationDate,
       genderId,
       password,
@@ -55,7 +55,6 @@ export class Client {
       cards?: Card[];
       insDate?: Date;
       updDate?: Date;
-      isActivated?: ActivationStatusType;
       activationDate?: Date;
       genderId?: GenderType;
       password?: Password;
@@ -72,7 +71,6 @@ export class Client {
     this.cards = cards;
     this.insDate = insDate;
     this.updDate = updDate;
-    this.isActivated = isActivated;
     this.userOnvi = userOnvi;
     this.activatedDate = activationDate;
     this.genderId = genderId;
@@ -85,7 +83,7 @@ export class Client {
     const { rawPhone, clientType, refreshToken, cards, password, subscribe } = data;
     const phone: string = this.formatPhone(rawPhone);
     const name: string = this.generateDefaultName(phone);
-    return new Client(name, rawPhone, phone, clientType, refreshToken, 1, {
+    return new Client(name, rawPhone, phone, clientType, refreshToken, 1, 1, {
       cards,
       password,
       subscribe
@@ -199,6 +197,7 @@ export class Client {
       correctPhone,
       clientTypeId,
       refreshToken,
+      isActivated,
       userOnvi,
       {
         clientId,
@@ -206,7 +205,6 @@ export class Client {
         birthday,
         insDate,
         updDate,
-        isActivated,
         activationDate: activatedDate,
         genderId,
         cards: cardModels,
