@@ -28,6 +28,10 @@ import { RefreshResponseDto } from './dto/response/refresh-response.dto';
 import { use } from 'passport';
 import { CustomHttpException } from '../../infrastructure/common/exceptions/custom-http.exception';
 import {SubscribeUsecase} from "../../aplication/usecases/subscribe/subscribe.usecase";
+import {OtpRequestDto} from "./dto/otp-request.dto";
+import {OtpInternalExceptions} from "../../domain/otp/exceptions/otp-internal.exceptions";
+import {OtpResponseDto} from "./dto/response/otp-response.dto";
+import {OtpStatus} from "../../domain/otp/enums/otp-status.enum";
 
 @Controller('auth')
 export class AuthController {
@@ -107,6 +111,33 @@ export class AuthController {
           innerCode: e.innerCode,
           message: e.message,
           code: HttpStatus.NOT_FOUND,
+        });
+      } else {
+        throw new CustomHttpException({
+          message: e.message,
+          code: HttpStatus.INTERNAL_SERVER_ERROR,
+        });
+      }
+    }
+  }
+
+  @HttpCode(201)
+  @Post('/send/otp')
+  async sendOtp(@Body() otpRequest: OtpRequestDto) {
+    try {
+      const email = otpRequest.email;
+      const otp = await this.authUsecase.sendOtp(email);
+      return new OtpResponseDto({
+        status: OtpStatus.SENT_SUCCESS,
+        target: otp.phone,
+      });
+    } catch (e) {
+      if (e instanceof OtpInternalExceptions) {
+        throw new CustomHttpException({
+          type: e.type,
+          innerCode: e.innerCode,
+          message: e.message,
+          code: HttpStatus.INTERNAL_SERVER_ERROR,
         });
       } else {
         throw new CustomHttpException({

@@ -17,6 +17,9 @@ import { InvalidAccessException } from '../../../domain/auth/exceptions/invalida
 import * as otpGenerator from 'otp-generator';
 import {CardNotFoundExceptions} from "../../../domain/account/exceptions/card-not-found.exceptions";
 import {CardHasClientExceptions} from "../../../domain/account/exceptions/card-has-client.exception";
+import {IOtpRepository} from "../../../domain/otp/adapter/otp-repository.interface";
+import {Otp} from "../../../domain/otp/model/otp";
+import {OtpInternalExceptions} from "../../../domain/otp/exceptions/otp-internal.exceptions";
 
 @Injectable()
 export class AuthUsecase {
@@ -36,6 +39,8 @@ export class AuthUsecase {
     private readonly jwtService: IJwtService,
     private readonly jwtConfig: IJwtConfig,
     private readonly bcryptService: IBcrypt,
+    private readonly otpRepository: IOtpRepository,
+    private readonly dateService: IDate,
   ) {}
 
   //public async isAuthenticated(phone: string) {}
@@ -170,6 +175,35 @@ export class AuthUsecase {
 
   private formatPhone(phone): string {
     return phone.replace(/^\s*\+|\s*/g, '');
+  }
+
+  public async sendOtp(email: string): Promise<any> {
+    //1) Send otp through sms
+    //Generate expitry time
+    const otpTime = this.dateService.generateOtpTime();
+    //Create new otp model
+    const otpCode = this.generateOtp();
+    console.log(otpCode);
+    const otp = new Otp(null, email, otpCode, otpTime);
+    //Remove any existing otp
+    await this.otpRepository.removeOne(email);
+    //Save new otp and return
+    const newOtp = await this.otpRepository.create(otp);
+    await this.otpRepository.send(newOtp);
+
+    if (!newOtp) {
+      throw new OtpInternalExceptions(email, otp.otp);
+    }
+
+    return newOtp;
+  }
+
+  private generateOtp() {
+    return otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
   }
 
   private async generateNomerCard() {

@@ -13,6 +13,8 @@ import { SubscribeModule } from './infrastructure/subscribe/subscribe.module';
 import { CronModule } from './infrastructure/services/cron/cron.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OrderModule } from './infrastructure/order/order.module';
+import {OtpModule} from "./infrastructure/otp/otp.module";
+import {DateModule} from "./infrastructure/services/date/date.module";
 
 @Module({
   imports: [
@@ -27,11 +29,13 @@ import { OrderModule } from './infrastructure/order/order.module';
     AccountModule,
     SubscribeModule,
     JwtModule,
+    DateModule,
     AuthModule,
     EnvConfigModule,
     BcryptModule,
     CronModule,
     OrderModule,
+    OtpModule,
   ],
   controllers: [],
   providers: [],

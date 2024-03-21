@@ -9,6 +9,8 @@ import { AuthController } from '../../api/auth/auth.controller';
 import { LocalStrategy } from '../common/strategies/local.strategy';
 import { JwtRefreshStrategy } from '../common/strategies/jwt-refresh.strategy';
 import { JwtStrategy } from '../common/strategies/jwt.strategy';
+import {DateModule} from "../services/date/date.module";
+import {OtpModule} from "../otp/otp.module";
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { JwtStrategy } from '../common/strategies/jwt.strategy';
     AccountModule,
     EnvConfigModule,
     BcryptModule,
+    DateModule,
+    OtpModule,
   ],
   controllers: [AuthController],
   providers: [
