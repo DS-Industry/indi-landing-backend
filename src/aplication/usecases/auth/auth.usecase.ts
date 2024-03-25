@@ -20,6 +20,10 @@ import {CardHasClientExceptions} from "../../../domain/account/exceptions/card-h
 import {IOtpRepository} from "../../../domain/otp/adapter/otp-repository.interface";
 import {Otp} from "../../../domain/otp/model/otp";
 import {OtpInternalExceptions} from "../../../domain/otp/exceptions/otp-internal.exceptions";
+import {EmailExistsException} from "../../../domain/account/exceptions/email-exist.exception";
+import {InvalidOtpException} from "../../../domain/auth/exceptions/invalid-otp.exception";
+import {OTP_EXPIRY_TIME} from "../../../infrastructure/common/constants/constants";
+import {AccountNotFoundExceptions} from "../../../domain/account/exceptions/account-not-found.exceptions";
 
 @Injectable()
 export class AuthUsecase {
@@ -45,26 +49,22 @@ export class AuthUsecase {
 
   //public async isAuthenticated(phone: string) {}
 
-  public async register(phone: string, uniqNomer: string, password: string, chPassword: string): Promise<any> {
+  public async register(phone: string, uniqNomer: string, password: string, chPassword: string, otp:string): Promise<any> {
+
+    const currentOtp = await this.otpRepository.findOnePhone(phone);
+
+    if (
+        !currentOtp ||
+        this.dateService.isExpired(currentOtp.expireDate, OTP_EXPIRY_TIME) ||
+        currentOtp.otp != otp
+    ) {
+      throw new InvalidOtpException(phone);
+    }
 
     if(password != chPassword) {
       throw new InvalidPasswordException(phone);
     }
-
     const card = await this.accountRepository.findOneByNomer(uniqNomer);
-    if(!card){
-      throw new CardNotFoundExceptions(uniqNomer);
-    }
-    if(card.clientId !== null && card.clientId !== undefined){
-      throw new CardHasClientExceptions(uniqNomer);
-    }
-    //Check if user already exists
-    const account = await this.accountRepository.findOneByPhoneNumber(phone);
-
-    if (account) {
-      throw new AccountExistsException(phone);
-    }
-
     //Generate token
     const accessToken = await this.signAccessToken(phone);
     const refreshToken = await this.signRefreshToken(phone);
@@ -85,9 +85,31 @@ export class AuthUsecase {
       hashPassword,
     );
 
+    await this.otpRepository.changeReg(currentOtp);
+
     //await this.setCurrentRefreshToken(phone, refreshToken.token);
 
     return { newAccount, accessToken, refreshToken };
+  }
+
+  public async changePassword(phone: string, password: string, chPassword: string, otp: string){
+    const currentOtp = await this.otpRepository.findOnePhone(phone);
+
+    if (
+        !currentOtp ||
+        this.dateService.isExpired(currentOtp.expireDate, OTP_EXPIRY_TIME) ||
+        currentOtp.otp != otp
+    ) {
+      throw new InvalidOtpException(phone);
+    }
+
+    if(password != chPassword) {
+      throw new InvalidPasswordException(phone);
+    }
+
+    const oldPassword = await this.accountRepository.findPasswordByPhoneNumber(phone);
+    const hashPassword = await this.bcryptService.hash(password);
+    await this.accountRepository.changePassword(oldPassword, hashPassword);
   }
 
   public async validateUserForLocalStrategy(
@@ -177,17 +199,43 @@ export class AuthUsecase {
     return phone.replace(/^\s*\+|\s*/g, '');
   }
 
-  public async sendOtp(email: string): Promise<any> {
-    //1) Send otp through sms
-    //Generate expitry time
+  public async regOtp(email: string, phone: string, uniqNomer: string,): Promise<any> {
+
+    const card = await this.accountRepository.findOneByNomer(uniqNomer);
+    if(!card){
+      throw new CardNotFoundExceptions(uniqNomer);
+    }
+    if(card.clientId !== null && card.clientId !== undefined){
+      throw new CardHasClientExceptions(uniqNomer);
+    }
+    //Check if user already exists
+    const account = await this.accountRepository.findOneByPhoneNumber(phone);
+    if (account) {
+      throw new AccountExistsException(phone);
+    }
+
+    const accountEmail = await this.otpRepository.findOneEmail(email)
+    if (accountEmail && accountEmail.registration == 1){
+      throw new EmailExistsException(email);
+    }
+
+    return await this.sendOtp(email, phone, 0);
+  }
+
+  public async changePasswordOtp(phone: string): Promise<any> {
+    const otp = await this.otpRepository.findOnePhone(phone);
+    if(!otp || otp.registration == 0){
+      throw new AccountNotFoundExceptions(phone);
+    }
+    return await this.sendOtp(otp.email, otp.phone, 1);
+  }
+
+  private async sendOtp(email: string, phone: string, reg: number): Promise<any> {
+
     const otpTime = this.dateService.generateOtpTime();
-    //Create new otp model
     const otpCode = this.generateOtp();
-    console.log(otpCode);
-    const otp = new Otp(null, email, otpCode, otpTime);
-    //Remove any existing otp
+    const otp = new Otp(null, email, phone, otpCode, otpTime, reg);
     await this.otpRepository.removeOne(email);
-    //Save new otp and return
     const newOtp = await this.otpRepository.create(otp);
     await this.otpRepository.send(newOtp);
 

@@ -11,4 +11,8 @@ export const configuration = () => ({
     gvlSource: process.env.GVL_SOURCE,
     dsCloudUrl: process.env.DS_CLOUD_URL,
     dsCloudApiKey: process.env.DS_CLOUD_API_KEY,
+    emailUrl: process.env.EMAIL_URL,
+    emailApiKey: process.env.EMAIL_API_KEY,
+    emailName: process.env.EMAIL_NAME,
+    emailFrom: process.env.EMAIL_FROM,
 });

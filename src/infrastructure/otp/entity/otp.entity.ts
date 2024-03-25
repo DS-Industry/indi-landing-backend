@@ -8,6 +8,9 @@ export class OtpEntity {
     @Column({name: 'EMAIL', type: 'varchar2' })
     email: string;
 
+    @Column({ name: 'PHONE', type: 'nvarchar2' })
+    phone: string;
+
     @Column({ name: 'CONFIRM_CODE', type: 'varchar2' })
     otp: string;
 
@@ -16,4 +19,7 @@ export class OtpEntity {
 
     @Column({ name: 'EXPIRE_DATE', type: 'date' })
     expireDate: Date;
+
+    @Column({ name: 'REGISTRATION', type: 'number' })
+    registration: number;
 }

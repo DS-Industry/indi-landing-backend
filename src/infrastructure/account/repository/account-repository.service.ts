@@ -123,6 +123,10 @@ export class AccountRepository implements IAccountRepository {
     return await this.cardRepository.changeType(cardId, newCardTypeId);
   }
 
+  async changePassword(password:Password, newPassword:string): Promise<any>{
+    await this.passwordRepository.change(password, newPassword);
+  }
+
   async setRefreshToken(phone: string, token: string): Promise<any> {
     await this.clientRepository.setRefreshToken(phone, token);
   }

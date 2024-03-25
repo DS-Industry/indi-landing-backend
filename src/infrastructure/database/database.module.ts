@@ -6,6 +6,7 @@ import { CardEntity } from '../account/entity/card.entity';
 import { TariffEntity } from '../account/entity/tariff.entity';
 import { PasswordEntity } from '../account/entity/password.entity';
 import { SubscribeEntity } from '../subscribe/entity/subscribe.entity';
+import {OtpEntity} from "../otp/entity/otp.entity";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SubscribeEntity } from '../subscribe/entity/subscribe.entity';
           PasswordEntity,
           TariffEntity,
           SubscribeEntity,
+          OtpEntity,
         ],
       }),
       inject: [ConfigService],

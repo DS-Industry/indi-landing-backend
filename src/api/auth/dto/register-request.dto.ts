@@ -25,4 +25,8 @@ export class RegisterRequestDto {
   @IsString()
   @IsNotEmpty({ message: 'Password number is required' })
   checkPassword: string;
+  @IsNumberString()
+  @MinLength(6, { message: 'Otp must be valid' })
+  @MaxLength(6, { message: 'Otp must be valid' })
+  otp: string;
 }

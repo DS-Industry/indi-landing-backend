@@ -15,8 +15,9 @@ export class PasswordRepository implements IPasswordRepository{
         @InjectRepository(PasswordEntity)
         private readonly passwordRepository: Repository<PasswordEntity>
     ) {}
-    async change(): Promise<void> {
-        return Promise.resolve(undefined);
+    async change(password: Password, newPassword: string): Promise<void> {
+        password.password = newPassword;
+        await this.passwordRepository.save(password);
     }
 
     async create(password: Password, client: Client): Promise<any> {

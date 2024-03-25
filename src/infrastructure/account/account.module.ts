@@ -11,6 +11,9 @@ import { TariffEntity } from './entity/tariff.entity';
 import {PasswordEntity} from "./entity/password.entity";
 import {PasswordRepository} from "./repository/password.repository";
 import {SubscribeEntity} from "../subscribe/entity/subscribe.entity";
+import {DateModule} from "../services/date/date.module";
+import {OtpModule} from "../otp/otp.module";
+import {BcryptModule} from "../services/bcrypt/bcrypt.module";
 
 @Module({
   imports: [
@@ -21,6 +24,9 @@ import {SubscribeEntity} from "../subscribe/entity/subscribe.entity";
       PasswordEntity,
       SubscribeEntity,
     ]),
+    DateModule,
+    OtpModule,
+    BcryptModule,
   ],
   controllers: [AccountController],
   providers: [
