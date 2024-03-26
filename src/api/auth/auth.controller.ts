@@ -20,6 +20,10 @@ import {ChangePasswordRequestDto} from "./dto/change-password-request.dto";
 import {InvalidOtpException} from "../../domain/auth/exceptions/invalid-otp.exception";
 import {ChangePasswordResponseDto} from "./dto/response/change-password-response.dto";
 import {ChangePassword} from "../../domain/account/password/enums/change-password.enum";
+import {CardNotFoundExceptions} from "../../domain/account/exceptions/card-not-found.exceptions";
+import {CardHasClientExceptions} from "../../domain/account/exceptions/card-has-client.exception";
+import {AccountExistsException} from "../../domain/account/exceptions/account-exists.exception";
+import {EmailExistsException} from "../../domain/account/exceptions/email-exist.exception";
 
 @Controller('auth')
 export class AuthController {
@@ -159,14 +163,28 @@ export class AuthController {
         target: otp.phone,
       });
     } catch (e) {
-      if (e instanceof OtpInternalExceptions) {
+      if (e instanceof CardNotFoundExceptions) {
         throw new CustomHttpException({
           type: e.type,
           innerCode: e.innerCode,
           message: e.message,
           code: HttpStatus.INTERNAL_SERVER_ERROR,
         });
-      } else if (e instanceof AccountNotFoundExceptions) {
+      } else if (e instanceof CardHasClientExceptions) {
+        throw new CustomHttpException({
+          type: e.type,
+          innerCode: e.innerCode,
+          message: e.message,
+          code: HttpStatus.NOT_FOUND,
+        });
+      } else if (e instanceof AccountExistsException) {
+        throw new CustomHttpException({
+          type: e.type,
+          innerCode: e.innerCode,
+          message: e.message,
+          code: HttpStatus.NOT_FOUND,
+        });
+      } else if (e instanceof EmailExistsException) {
         throw new CustomHttpException({
           type: e.type,
           innerCode: e.innerCode,
