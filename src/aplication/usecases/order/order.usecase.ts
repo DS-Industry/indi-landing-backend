@@ -37,7 +37,7 @@ export class OrderUsecase {
         });
     }
 
-    async check(data: CheckOrderDto){
+    async checkOrd(data: CheckOrderDto){
         try {
             const body = data.orderId + '|' + data.response.razorpay_payment_id;
 

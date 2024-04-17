@@ -45,7 +45,7 @@ export class OrderController {
   @HttpCode(201)
   async check(@Body() data: CheckOrderDto) {
     try {
-      return await this.orderUsecase.check(data);
+      return await this.orderUsecase.checkOrd(data);
     } catch (e) {
       throw new CustomHttpException({
         message: e.message,

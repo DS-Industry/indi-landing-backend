@@ -4,6 +4,8 @@ import {CustomHttpException} from "../../infrastructure/common/exceptions/custom
 import {CreateSubscribeDto} from "./dto/create-subscribe.dto";
 import {SubscribeUsecase} from "../../aplication/usecases/subscribe/subscribe.usecase";
 import {ReplenishmentDto} from "./dto/replenishment.dto";
+import {CheckOrderDto} from "../order/dto/check-order.dto";
+import {CheckSubDto} from "./dto/check-sub.dto";
 
 @Controller('subscribe')
 export class SubscribeController {
@@ -97,6 +99,19 @@ export class SubscribeController {
             const { user } = req;
 
             return await this.subscribeUsecase.cancellation(user);
+        } catch (e) {
+            throw new CustomHttpException({
+                message: e.message,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
+            });
+        }
+    }
+
+    @Post('check')
+    @HttpCode(201)
+    async check(@Body() data: CheckSubDto) {
+        try {
+            return await this.subscribeUsecase.checkSub(data);
         } catch (e) {
             throw new CustomHttpException({
                 message: e.message,
