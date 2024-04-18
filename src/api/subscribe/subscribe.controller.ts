@@ -39,6 +39,10 @@ export class SubscribeController {
                 payId: req.body.payload.payment.entity.id,
                 amount: req.body.payload.payment.entity.amount/100,
             }
+            console.log(subscription.subscribeId);
+            console.log(subscription.status);
+            console.log(subscription.payId);
+            console.log(subscription.amount);
             console.log('test ' + subscription.dateDebiting)
             return await this.subscribeUsecase.replenishment(subscription)
 

@@ -57,7 +57,7 @@ export class SubscribeUsecase {
     async replenishment(subscribe: ReplenishmentDto): Promise<any>{
 
         const oldSubscribe = await this.subscribeRepository.findOneByIdSub(subscribe.subscribeId);
-        console.log('bag' + oldSubscribe)
+        console.log('bag ' + oldSubscribe.clientId)
         const client = await this.accountRepository.findOneClientById(oldSubscribe.clientId);
         const card = client.getCard();
 
