@@ -69,7 +69,11 @@ export class SubscribeUsecase {
         console.log("Update db: " + subscribe.subscribeId)
         await this.accountRepository.zeroingOut(card.cardId);
         console.log("Zeroing out: " + card.nomer)
-        await this.subscribeRepository.replenishment(subscribe, client, card);
+        let amount = subscribe.amount;
+        if(subscribe.amount === 1345){
+            amount = 2200;
+        }
+        await this.subscribeRepository.replenishment(subscribe, amount, client, card);
         console.log("Replenishment: " + card.nomer)
     }
 

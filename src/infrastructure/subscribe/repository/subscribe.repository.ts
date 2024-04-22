@@ -87,7 +87,7 @@ export class SubscribeRepository implements ISubscribeRepository{
         return subscribeEntity;
     }
 
-    async replenishment(subscribe: ReplenishmentDto, client: Client, card: Card){
+    async replenishment(subscribe: ReplenishmentDto, amount: number, client: Client, card: Card){
         const addTransactionQuery = `begin :p0 := cwash.PAY_OPER_PKG.add_oper_open(:p1, :p2, :p3, :p4, :p5, :p6); end;`;
         const runAddPyamentQuery = await this.dataSource.query(
             addTransactionQuery,
@@ -96,7 +96,7 @@ export class SubscribeRepository implements ISubscribeRepository{
                 card.nomer,
                 client.email,
                 client.correctPhone,
-                subscribe.amount,
+                amount,
                 subscribe.payId,
                 new Date(),
             ],

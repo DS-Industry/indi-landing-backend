@@ -11,6 +11,6 @@ export abstract class ISubscribeRepository{
     abstract findOneByClient(clientId: number): Promise<any>;
     abstract findOneByIdSub(subscribeId: string): Promise<any>;
     abstract update(subscribe: Subscribe, client: Client): Promise<any>;
-    abstract replenishment(subscribe: ReplenishmentDto, client: Client, card: Card): Promise<any>;
+    abstract replenishment(subscribe: ReplenishmentDto, amount: number, client: Client, card: Card): Promise<any>;
     abstract findAllActive(): Promise<any>;
 }
