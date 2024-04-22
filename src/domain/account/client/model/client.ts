@@ -70,6 +70,7 @@ export class Client {
     this.birthday = birthday;
     this.cards = cards;
     this.insDate = insDate;
+    this.isActivated = isActivated;
     this.updDate = updDate;
     this.userOnvi = userOnvi;
     this.activatedDate = activationDate;
