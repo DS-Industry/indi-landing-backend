@@ -149,7 +149,7 @@ export class Client {
     };
   }
   private static generateDefaultName(correctPhone: string): string {
-    return `Onvi ${correctPhone}`;
+    return `${correctPhone}`;
   }
   private static formatPhone(rawPhone: string): string {
     return rawPhone.replace(/^\s*\+|\s*/g, '');
