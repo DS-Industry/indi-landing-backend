@@ -49,9 +49,9 @@ export class AuthUsecase {
 
   //public async isAuthenticated(phone: string) {}
 
-  public async register(phone: string, uniqNomer: string, password: string, chPassword: string, otp:string): Promise<any> {
+  public async register(phone: string, email: string, uniqNomer: string, password: string, chPassword: string, otp:string): Promise<any> {
 
-    const currentOtp = await this.otpRepository.findOnePhone(phone);
+    const currentOtp = await this.otpRepository.findOneEmail(email);
 
     if (
         !currentOtp ||

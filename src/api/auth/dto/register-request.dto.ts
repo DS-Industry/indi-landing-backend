@@ -1,5 +1,5 @@
 import {
-  IsBoolean,
+  IsBoolean, IsEmail,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
@@ -16,6 +16,9 @@ export class RegisterRequestDto {
     message: 'Phone number must be valid',
   })
   phone: string;
+  @IsEmail()
+  @IsNotEmpty({ message: 'Email is required' })
+  email:string;
   @IsString()
   @IsNotEmpty({ message: 'UniqCard string is required' })
   uniqNomer: string;
