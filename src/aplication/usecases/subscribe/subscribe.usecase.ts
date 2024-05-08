@@ -71,7 +71,7 @@ export class SubscribeUsecase {
         console.log("Zeroing out: " + card.nomer)
         let amount = subscribe.amount;
         if(subscribe.amount === 1345){
-            amount = 2200;
+            amount = 1950;
         }
         await this.subscribeRepository.replenishment(subscribe, amount, client, card);
         console.log("Replenishment: " + card.nomer)
