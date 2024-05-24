@@ -81,10 +81,13 @@ export class SubscribeUsecase {
         const subscribes = await this.subscribeRepository.findAllActive()
         for( const subscribe of subscribes){
             const client = await this.accountRepository.findOneClientById(subscribe.clientId);
+            const card = client.getCard();
             subscribe.status = "closed";
             subscribe.dateDebiting = null;
             await this.subscribeRepository.update(subscribe, client);
             console.log("Change status " + subscribe.subscribeId + " closed")
+            await this.accountRepository.zeroingOut(card.cardId);
+            console.log("Zeroing out: " + card.nomer)
         }
     }
 
