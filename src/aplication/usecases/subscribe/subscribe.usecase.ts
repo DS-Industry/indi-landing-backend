@@ -131,7 +131,6 @@ export class SubscribeUsecase {
         });
         await instance.subscriptions.cancel(subscribe.subscribeId);
         subscribe.status = "closed";
-        subscribe.dateDebiting = null;
         await this.subscribeRepository.update(subscribe, client);
         return { status: 'Success' }
     }
