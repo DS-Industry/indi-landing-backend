@@ -2,6 +2,9 @@ import {Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn} from 'typeo
 import { CardEntity } from './card.entity';
 import {PasswordEntity} from "./password.entity";
 import {SubscribeEntity} from "../../subscribe/entity/subscribe.entity";
+import {PackEntity} from "../../pack/pack/entity/pack.entity";
+import {PackUsageEntity} from "../../pack/pack/entity/pack-usage.entity";
+import {RemainsPackEntity} from "../../pack/remains/entity/remains-pack.entity";
 
 @Entity({ name: 'CRDCLIENT', synchronize: false })
 export class ClientEntity {
@@ -91,4 +94,10 @@ export class ClientEntity {
 
   @OneToOne( () => SubscribeEntity, (subscribe: SubscribeEntity) => subscribe.client)
   subscribe: SubscribeEntity;
+
+  @OneToOne( () => PackUsageEntity, (packUsage: PackUsageEntity) => packUsage.client)
+  packUsage: PackUsageEntity;
+
+  @OneToOne( () => RemainsPackEntity, (remainsPack: RemainsPackEntity) => remainsPack.client)
+  remainsPack: RemainsPackEntity;
 }

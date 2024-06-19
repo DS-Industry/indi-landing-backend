@@ -78,7 +78,7 @@ export class AccountRepository implements IAccountRepository {
     return client;
   }
 
-  async findOneClientById(clientId:number): Promise<any>{
+  async findOneClientById(clientId:number): Promise<Client>{
 
     const client = await this.clientRepository.findOneById(clientId);
 
@@ -131,7 +131,7 @@ export class AccountRepository implements IAccountRepository {
     await this.clientRepository.setRefreshToken(phone, token);
   }
 
-  async zeroingOut(cardId: number): Promise<any> {
-    await this.cardRepository.zeroingOut(cardId);
+  async zeroingOut(card: Card, minusPoint: number): Promise<any> {
+    await this.cardRepository.zeroingOut(card, minusPoint);
   }
 }

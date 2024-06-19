@@ -12,7 +12,7 @@ export abstract class IAccountRepository {
   ): Promise<any>;
   abstract update(client: Client): Promise<any>;
   abstract findOneByPhoneNumber(phone: string): Promise<any>;
-  abstract findOneClientById(clientId: number): Promise<any>;
+  abstract findOneClientById(clientId: number): Promise<Client>;
   abstract findOneByDevNomer(uniqNomer: string): Promise<any>;
   abstract findOneByNomer(uniqNomer: string): Promise<any>;
   abstract findPasswordByPhoneNumber(phone: string): Promise<any>;
@@ -20,5 +20,5 @@ export abstract class IAccountRepository {
   abstract changePassword(password: Password, newPassword: string): Promise<any>;
   abstract setRefreshToken(phone: string, token: string): Promise<any>;
   abstract findCardTariff(card: Card): Promise<Tariff>;
-  abstract zeroingOut(cardId: number): Promise<any>;
+  abstract zeroingOut(card: Card, minusPoint: number): Promise<any>;
 }

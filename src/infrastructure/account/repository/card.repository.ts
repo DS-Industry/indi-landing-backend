@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { ICardRepository } from '../../../domain/account/card/card-repository.abstract';
-import { InjectRepository } from '@nestjs/typeorm';
+import {InjectDataSource, InjectRepository} from '@nestjs/typeorm';
 import { CardEntity } from '../entity/card.entity';
-import { Repository } from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import { Card } from '../../../domain/account/card/model/card';
 import { Client } from '../../../domain/account/client/model/client';
 import { ClientEntity } from '../entity/client.entity';
 import { ClientRepository } from './client.repository';
+import * as oracledb from 'oracledb';
 
 @Injectable()
 export class CardRepository implements ICardRepository {
   constructor(
     @InjectRepository(CardEntity)
     private readonly cardRepository: Repository<CardEntity>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
   async create(card: Card, client: Client): Promise<Card> {
     const cardEntity = this.toCardEntity(card);
@@ -93,17 +96,20 @@ export class CardRepository implements ICardRepository {
     return card;
   }
 
-  async zeroingOut(cardId: number): Promise<any>{
-    const card = await this.cardRepository.findOne({
-      where: {
-        cardId: cardId,
-      },
-    });
+  async zeroingOut(card: Card, minusPoint: number): Promise<any>{
 
-    if (!card) return null;
-    card.balance = 0;
-    await this.cardRepository.save(card);
-    return card;
+    const addTransactionQuery = `begin cwash.card_pkg.add_oper(:p0, :p1, :p2, :p3, :p4); end;`;
+    const runAddPyamentQuery = await this.dataSource.query(
+        addTransactionQuery,
+        [
+          card.cardId,
+          5,
+          minusPoint,
+          'Списание неиспользованных баллов по подписке',
+          3,
+        ],
+    );
+    return 'SUCCESS';
   }
 
   async lock(cardId: number): Promise<void> {

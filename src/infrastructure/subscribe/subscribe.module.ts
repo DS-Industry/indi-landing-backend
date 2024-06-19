@@ -6,9 +6,10 @@ import { SubscribeRepository } from './repository/subscribe.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscribeEntity } from './entity/subscribe.entity';
 import { AccountModule } from '../account/account.module';
+import {PackModule} from "../pack/pack/pack.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SubscribeEntity]), AccountModule],
+  imports: [TypeOrmModule.forFeature([SubscribeEntity]), AccountModule, PackModule],
   controllers: [SubscribeController],
   providers: [
     SubscribeUsecase,

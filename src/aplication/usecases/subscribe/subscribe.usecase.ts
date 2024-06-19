@@ -9,6 +9,7 @@ import {ReplenishmentDto} from "../../../api/subscribe/dto/replenishment.dto";
 import {Observable, Subscription} from "rxjs";
 import {AxiosResponse} from "axios/index";
 import {CheckSubDto} from "../../../api/subscribe/dto/check-sub.dto";
+import {IRemainsRepository} from "../../../domain/pack/remains/interface/remains-repository.interface";
 
 @Injectable()
 export class SubscribeUsecase {
@@ -16,6 +17,7 @@ export class SubscribeUsecase {
         private readonly accountRepository: IAccountRepository,
         private readonly subscribeRepository: ISubscribeRepository,
         private readonly configService: ConfigService,
+        private readonly remainsRepository: IRemainsRepository,
     ) {}
 
     async create(body: CreateSubscribeDto, client: Client): Promise<any> {
@@ -67,7 +69,13 @@ export class SubscribeUsecase {
 
         await this.subscribeRepository.update(oldSubscribe, client);
         console.log("Update db: " + subscribe.subscribeId)
-        await this.accountRepository.zeroingOut(card.cardId);
+        const remains = await this.remainsRepository.findOneByClientId(client.clientId);
+        let minusPoint = card.balance;
+        if(remains){
+            minusPoint = card.balance - remains.remainsPoint;
+        }
+
+        await this.accountRepository.zeroingOut(card, minusPoint);
         console.log("Zeroing out: " + card.nomer)
         let amount = subscribe.amount;
         if(subscribe.amount === 1345){
@@ -86,7 +94,13 @@ export class SubscribeUsecase {
             subscribe.dateDebiting = null;
             await this.subscribeRepository.update(subscribe, client);
             console.log("Change status " + subscribe.subscribeId + " closed")
-            await this.accountRepository.zeroingOut(card.cardId);
+            const remains = await this.remainsRepository.findOneByClientId(client.clientId);
+            let minusPoint = card.balance;
+            if(remains){
+                minusPoint = card.balance - remains.remainsPoint;
+            }
+
+            await this.accountRepository.zeroingOut(card, minusPoint);
             console.log("Zeroing out: " + card.nomer)
         }
     }

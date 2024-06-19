@@ -15,6 +15,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { OrderModule } from './infrastructure/order/order.module';
 import {OtpModule} from "./infrastructure/otp/otp.module";
 import {DateModule} from "./infrastructure/services/date/date.module";
+import {PackModule} from "./infrastructure/pack/pack/pack.module";
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import {DateModule} from "./infrastructure/services/date/date.module";
     CronModule,
     OrderModule,
     OtpModule,
+    PackModule,
   ],
   controllers: [],
   providers: [],
