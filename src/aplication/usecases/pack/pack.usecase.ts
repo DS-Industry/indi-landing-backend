@@ -80,6 +80,7 @@ export class PackUsecase {
 
         } else
             response = {'signatureIsValid': 'false'}
+        console.log('packMin: ' + data.orderId + ' ' + response);
         return response
     }
 }
