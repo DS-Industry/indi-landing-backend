@@ -84,7 +84,7 @@ export class Client {
     const { rawPhone, clientType, refreshToken, cards, password, subscribe } = data;
     const phone: string = this.formatPhone(rawPhone);
     const name: string = this.generateDefaultName(phone);
-    return new Client(name, rawPhone, phone, clientType, refreshToken, 1, 1, {
+    return new Client(name, rawPhone, phone, clientType, refreshToken, 1, 0, {
       cards,
       password,
       subscribe
