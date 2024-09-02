@@ -49,7 +49,7 @@ export class AuthUsecase {
 
   //public async isAuthenticated(phone: string) {}
 
-  public async register(phone: string, email: string, uniqNomer: string, password: string, chPassword: string, otp:string): Promise<any> {
+  public async register(phone: string, email: string, uniqNomer: string, password: string, chPassword: string, otp:string, invitedCode: string): Promise<any> {
 
     const currentOtp = await this.otpRepository.findOneEmail(email);
 
@@ -86,6 +86,10 @@ export class AuthUsecase {
     );
 
     await this.otpRepository.changeReg(currentOtp);
+
+    if (invitedCode) {
+      await this.accountRepository.applyInvitedCode(invitedCode, phone);
+    }
 
     //await this.setCurrentRefreshToken(phone, refreshToken.token);
 
@@ -199,7 +203,7 @@ export class AuthUsecase {
     return phone.replace(/^\s*\+|\s*/g, '');
   }
 
-  public async regOtp(email: string, phone: string, uniqNomer: string,): Promise<any> {
+  public async regOtp(email: string, phone: string, uniqNomer: string, invitedCode: string): Promise<any> {
 
     const card = await this.accountRepository.findOneByNomer(uniqNomer);
     if(!card){
@@ -217,6 +221,10 @@ export class AuthUsecase {
     const accountEmail = await this.otpRepository.findOneEmail(email)
     if (accountEmail && accountEmail.registration == 1){
       throw new EmailExistsException(email);
+    }
+
+    if (invitedCode) {
+      await this.accountRepository.checkInvitedCode(invitedCode);
     }
 
     return await this.sendOtp(email, phone, 0);

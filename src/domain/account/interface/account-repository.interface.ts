@@ -21,4 +21,8 @@ export abstract class IAccountRepository {
   abstract setRefreshToken(phone: string, token: string): Promise<any>;
   abstract findCardTariff(card: Card): Promise<Tariff>;
   abstract zeroingOut(card: Card, minusPoint: number): Promise<any>;
+  abstract getInvitedCode(client: Client): Promise<any>;
+  abstract applyInvitedCode(invitedCode: string, phoneClient: string): Promise<any>;
+  abstract checkInvitedCode(invitedCode: string): Promise<any>;
+  abstract getAllInviteUsageClientByCodeId(id: number): Promise<any>;
 }

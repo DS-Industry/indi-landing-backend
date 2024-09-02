@@ -10,6 +10,8 @@ import {OtpEntity} from "../otp/entity/otp.entity";
 import {PackEntity} from "../pack/pack/entity/pack.entity";
 import {PackUsageEntity} from "../pack/pack/entity/pack-usage.entity";
 import {RemainsPackEntity} from "../pack/remains/entity/remains-pack.entity";
+import {InvitedCodeEntity} from "../account/entity/invitedCode.entity";
+import {InvitedCodeUsageEntity} from "../account/entity/invitedCodeUsage.entity";
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import {RemainsPackEntity} from "../pack/remains/entity/remains-pack.entity";
           ClientEntity,
           CardEntity,
           PasswordEntity,
+          InvitedCodeEntity,
+          InvitedCodeUsageEntity,
           TariffEntity,
           SubscribeEntity,
           OtpEntity,

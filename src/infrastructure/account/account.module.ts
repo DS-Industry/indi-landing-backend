@@ -14,6 +14,9 @@ import {SubscribeEntity} from "../subscribe/entity/subscribe.entity";
 import {DateModule} from "../services/date/date.module";
 import {OtpModule} from "../otp/otp.module";
 import {BcryptModule} from "../services/bcrypt/bcrypt.module";
+import {InvitedCodeRepository} from "./repository/invitedCode.repository";
+import {InvitedCodeEntity} from "./entity/invitedCode.entity";
+import {InvitedCodeUsageEntity} from "./entity/invitedCodeUsage.entity";
 
 @Module({
   imports: [
@@ -23,6 +26,8 @@ import {BcryptModule} from "../services/bcrypt/bcrypt.module";
       TariffEntity,
       PasswordEntity,
       SubscribeEntity,
+      InvitedCodeEntity,
+      InvitedCodeUsageEntity,
     ]),
     DateModule,
     OtpModule,
@@ -34,6 +39,7 @@ import {BcryptModule} from "../services/bcrypt/bcrypt.module";
     ClientRepository,
     CardRepository,
     PasswordRepository,
+    InvitedCodeRepository,
     AccountUsecase,
   ],
   exports: [AccountRepositoryProvider],

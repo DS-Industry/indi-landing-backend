@@ -38,7 +38,27 @@ export class AccountController {
     try {
       const { user } = req;
 
-      return user.getAccountInfo();
+      const client = user.getAccountInfo();
+      client.email = await this.accountUsecase.getEmail(user);
+      client.invitedFriends = await this.accountUsecase.getAllInviteUsageClientByCodeId(user);
+      return client;
+    } catch (e) {
+      throw new CustomHttpException({
+        message: e.message,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
+    }
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('/invited')
+  @HttpCode(200)
+  async getInvitedCode(@Request() req: any): Promise<any> {
+    try {
+      const { user } = req;
+      console.log(user)
+
+      return await this.accountUsecase.getInvitedCode(user);
     } catch (e) {
       throw new CustomHttpException({
         message: e.message,

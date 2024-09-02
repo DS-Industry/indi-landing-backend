@@ -15,6 +15,13 @@ import { Tariff } from '../../../domain/account/card/model/tariff';
 import {ICreatePasswordDto} from "../../../domain/account/password/dto/create-password.dto";
 import {Password} from "../../../domain/account/password/model/password";
 import {PasswordRepository} from "./password.repository";
+import {InvitedCodeRepository} from "./invitedCode.repository";
+import * as otpGenerator from "otp-generator";
+import {InvitedCode} from "../../../domain/account/invitedCode/model/invitedCode";
+import {InvitedCodeEnum} from "../../../domain/account/invitedCode/enum/invited-code.enum";
+import {InvalidOtpException} from "../../../domain/auth/exceptions/invalid-otp.exception";
+import {NotFoundCodeException} from "../../../domain/account/invitedCode/exception/not-found-code.exception";
+import {OverdueCodeException} from "../../../domain/account/invitedCode/exception/overdue-code.exception";
 
 @Injectable()
 export class AccountRepository implements IAccountRepository {
@@ -24,6 +31,7 @@ export class AccountRepository implements IAccountRepository {
     private readonly cardRepository: CardRepository,
     private readonly clientRepository: ClientRepository,
     private readonly passwordRepository: PasswordRepository,
+    private readonly invitedCodeRepository: InvitedCodeRepository
   ) {}
 
   async create(clientData: ICreateClientDto, card: Card, password: string): Promise<any> {
@@ -133,5 +141,64 @@ export class AccountRepository implements IAccountRepository {
 
   async zeroingOut(card: Card, minusPoint: number): Promise<any> {
     await this.cardRepository.zeroingOut(card, minusPoint);
+  }
+
+  async getInvitedCode(client:Client): Promise<any> {
+    const inviteCode = await this.invitedCodeRepository.findOneByClientId(client.clientId);
+    console.log(inviteCode)
+    if (!inviteCode) {
+      let ch = true;
+      let code: string;
+      while (ch) {
+        code = this.generateOtp();
+        const chCode = await this.invitedCodeRepository.findOneByCode(code);
+        if (!chCode) {
+          ch = false;
+        }
+      }
+
+      const invitedCode = InvitedCode.create({invitedCode: code, maxInvited: InvitedCodeEnum.MAX_INVITED, pointToOwner: InvitedCodeEnum.POINT_TO_OWNER, pointToUser: InvitedCodeEnum.POINT_TO_USER, clientId: client.clientId});
+      const newInvitedCode = await this.invitedCodeRepository.create(invitedCode, client);
+
+      if (!newInvitedCode) {
+        throw new InvalidOtpException(client.phone);
+      }
+      return newInvitedCode;
+    } else {
+      return inviteCode;
+    }
+  }
+
+  public async applyInvitedCode(invitedCode: string, phoneClient: string): Promise<any> {
+    const inviteCode = await this.invitedCodeRepository.findOneByCode(invitedCode);
+    const owner = await this.clientRepository.findOneById(inviteCode.clientId);
+    const client = await this.clientRepository.findOneByPhone(phoneClient);
+
+
+    await this.invitedCodeRepository.apply(inviteCode, owner, client);
+  }
+
+  public async getAllInviteUsageClientByCodeId(id: number): Promise<any> {
+    return  await this.invitedCodeRepository.findAllClientByCodeId(id);
+  }
+
+  public async checkInvitedCode(invitedCode: string): Promise<any> {
+    const inviteCode = await this.invitedCodeRepository.findOneByCode(invitedCode);
+    if (!inviteCode) {
+      throw new NotFoundCodeException(invitedCode);
+    }
+
+    const clients = await this.invitedCodeRepository.findAllClientByCodeId(inviteCode.id);
+    if (clients.length >= inviteCode.maxInvited) {
+      throw new OverdueCodeException(invitedCode)
+    }
+  }
+
+  private generateOtp() {
+    return otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
   }
 }

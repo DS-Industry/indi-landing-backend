@@ -35,6 +35,11 @@ export class AccountUsecase {
     };
   }
 
+  async getEmail(client: Client): Promise<string> {
+    const otp = await this.otpRepository.findOnePhone(client.phone);
+    return otp.email;
+  }
+
   async updateAccountInfo(body: UpdateAccountDto, client: Client) {
     const { name, email } = body;
 
@@ -90,6 +95,17 @@ export class AccountUsecase {
     }
 
     return newOtp;
+  }
+
+  public async getInvitedCode(client: Client): Promise<any> {
+    return await this.accountRepository.getInvitedCode(client);
+  }
+
+  public async getAllInviteUsageClientByCodeId(client: Client): Promise<any>{
+    const inviteCode = await this.accountRepository.getInvitedCode(client);
+    const clients = await this.accountRepository.getAllInviteUsageClientByCodeId(inviteCode.id);
+
+    return clients.map((client: Client) => client.name);
   }
 
   private generateOtp() {

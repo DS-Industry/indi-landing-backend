@@ -75,7 +75,7 @@ export class AuthController {
   async register(@Body() auth: RegisterRequestDto, @Request() req: any) {
     try {
       const { newAccount, accessToken, refreshToken } =
-        await this.authUsecase.register(auth.phone, auth.email, auth.uniqNomer, auth.password, auth.checkPassword, auth.otp);
+        await this.authUsecase.register(auth.phone, auth.email, auth.uniqNomer, auth.password, auth.checkPassword, auth.otp, auth.invitedCode);
 
       const shortUser = newAccount.getAccountInfo();
       delete shortUser['refreshToken'];
@@ -157,7 +157,8 @@ export class AuthController {
       const email = otpRequest.email;
       const phone = otpRequest.phone;
       const uniqNomer = otpRequest.uniqNomer;
-      const otp = await this.authUsecase.regOtp(email, phone, uniqNomer);
+      const invitedCode = otpRequest.invitedCode;
+      const otp = await this.authUsecase.regOtp(email, phone, uniqNomer, invitedCode);
       return new OtpResponseDto({
         status: OtpStatus.SENT_SUCCESS,
         target: otp.phone,

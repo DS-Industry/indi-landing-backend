@@ -28,6 +28,7 @@ export class Client {
   cards?: Card[];
   password?: Password;
   subscribe?: Subscribe;
+  invitedFriends?: string[];
 
   private constructor(
     name: string,
@@ -48,6 +49,7 @@ export class Client {
       genderId,
       password,
       subscribe,
+      invitedFriends
     }: {
       clientId?: number;
       email?: string;
@@ -59,6 +61,7 @@ export class Client {
       genderId?: GenderType;
       password?: Password;
       subscribe?: Subscribe;
+      invitedFriends?: string[]
     },
   ) {
     this.name = name;
@@ -78,6 +81,7 @@ export class Client {
     this.clientId = clientId
     this.password = password;
     this.subscribe = subscribe;
+    this.invitedFriends = invitedFriends;
   }
 
   public static create(data: ICreateClientDto): Client {
@@ -139,6 +143,7 @@ export class Client {
       email: this.email,
       birthday: this.birthday,
       refreshToken: this.refreshToken,
+      invitedFriends: this.invitedFriends,
       cards: {
         number: mainCard.nomer,
         unqNumber: mainCard.devNomer,

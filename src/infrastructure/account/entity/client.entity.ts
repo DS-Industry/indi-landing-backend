@@ -5,6 +5,8 @@ import {SubscribeEntity} from "../../subscribe/entity/subscribe.entity";
 import {PackEntity} from "../../pack/pack/entity/pack.entity";
 import {PackUsageEntity} from "../../pack/pack/entity/pack-usage.entity";
 import {RemainsPackEntity} from "../../pack/remains/entity/remains-pack.entity";
+import {InvitedCodeEntity} from "./invitedCode.entity";
+import {InvitedCodeUsageEntity} from "./invitedCodeUsage.entity";
 
 @Entity({ name: 'CRDCLIENT', synchronize: false })
 export class ClientEntity {
@@ -100,4 +102,10 @@ export class ClientEntity {
 
   @OneToOne( () => RemainsPackEntity, (remainsPack: RemainsPackEntity) => remainsPack.client)
   remainsPack: RemainsPackEntity;
+
+  @OneToOne(()=> InvitedCodeEntity, (invitedCode: InvitedCodeEntity) => invitedCode.client)
+  invitedCode: InvitedCodeEntity;
+
+  @OneToMany(() => InvitedCodeUsageEntity, (usage) => usage.client)
+  invitedCodeUsages: InvitedCodeUsageEntity[];
 }

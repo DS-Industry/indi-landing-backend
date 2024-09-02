@@ -27,6 +27,7 @@ export class PackUsecase {
     }
 
     async apply(body: ApplyPackDto) {
+        console.log('pay pack')
         const pack = await this.packRepository.findOneById(body.packId);
         if(!pack) return null;
 
@@ -54,6 +55,7 @@ export class PackUsecase {
     }
 
     async checkApply(data: CheckApplyDto, client: Client){
+        console.log('check pack and add point')
         const pack = await this.packRepository.findOneById(data.packId);
         if(!pack) return null;
 

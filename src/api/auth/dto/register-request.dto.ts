@@ -32,4 +32,7 @@ export class RegisterRequestDto {
   @MinLength(6, { message: 'Otp must be valid' })
   @MaxLength(6, { message: 'Otp must be valid' })
   otp: string;
+  @IsOptional()
+  @IsString()
+  invitedCode?: string;
 }

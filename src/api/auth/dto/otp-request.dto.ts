@@ -1,4 +1,4 @@
-import {IsEmail, IsNotEmpty, IsString, Matches} from 'class-validator';
+import {IsEmail, IsNotEmpty, IsOptional, IsString, Matches} from 'class-validator';
 export class OtpRequestDto{
     @IsEmail()
     @IsNotEmpty({ message: 'Email is required' })
@@ -12,4 +12,7 @@ export class OtpRequestDto{
     @IsString()
     @IsNotEmpty({ message: 'UniqCard string is required' })
     uniqNomer: string;
+    @IsOptional()
+    @IsString()
+    invitedCode?: string;
 }
