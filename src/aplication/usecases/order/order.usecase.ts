@@ -46,6 +46,8 @@ export class OrderUsecase {
                 .update(body.toString())
                 .digest('hex');
             let response = {'signatureIsValid': 'false'}
+            console.log('check one:' + expectedSignature)
+            console.log('check two:' + data.response.razorpay_signature)
             if (expectedSignature === data.response.razorpay_signature) {
                 console.log('signatureIsValid: true')
                 response = {'signatureIsValid': 'true'}
