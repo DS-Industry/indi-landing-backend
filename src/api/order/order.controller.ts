@@ -46,6 +46,10 @@ export class OrderController {
   async check(@Body() data: CheckOrderDto) {
     try {
       console.log('check Order:' + data.orderId)
+      console.log('check deviceId:' + data.deviceId)
+      console.log('check response razorpay_payment_id:' + data.response.razorpay_payment_id)
+      console.log('check response razorpay_order_id:' + data.response.razorpay_order_id)
+      console.log('check response razorpay_signature:' + data.response.razorpay_signature)
       return await this.orderUsecase.checkOrd(data);
     } catch (e) {
       throw new CustomHttpException({
