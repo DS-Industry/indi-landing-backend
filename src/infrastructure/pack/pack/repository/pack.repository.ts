@@ -71,6 +71,17 @@ export class PackRepository implements IPackRepository{
         return Pack.fromEntity(pack);
     }
 
+    async findLastOperDateById(client: Client): Promise<Date> {
+        const packUsage = await this.packUsageRepository.findOne({
+            where:{
+                client: { clientId: client.clientId} as ClientEntity
+            }
+        })
+        if (!packUsage) return null;
+
+        return packUsage.dateUsage;
+    }
+
    async getAll(): Promise<Pack[]> {
         const packs = await this.packRepository.find();
         return packs.map(pack => Pack.fromEntity(pack));

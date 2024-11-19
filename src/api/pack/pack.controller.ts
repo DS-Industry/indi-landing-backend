@@ -66,4 +66,20 @@ export class PackController {
             });
         }
     }
+
+    @UseGuards(JwtGuard)
+    @Get('/usage')
+    @HttpCode(200)
+    async getLastOperDate(@Request() req: any): Promise<Date> {
+        try {
+            const { user } = req;
+
+            return await this.packUsecase.getLastOperDateByClient(user);
+        } catch (e) {
+            throw new CustomHttpException({
+                message: e.message,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
+            });
+        }
+    }
 }

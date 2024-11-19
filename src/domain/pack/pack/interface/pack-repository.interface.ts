@@ -7,6 +7,7 @@ export abstract class IPackRepository{
     abstract create(data: AddPackDto): Promise<Pack>;
     abstract apply(pack: Pack, client: Client, card: Card, payId: string): Promise<any>;
     abstract findOneById(packId: number): Promise<Pack>;
+    abstract findLastOperDateById(client: Client): Promise<Date>;
     abstract update( pack: Pack): Promise<any>;
     abstract getAll(): Promise<Pack[]>;
 }

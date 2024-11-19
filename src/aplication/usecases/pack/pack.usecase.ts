@@ -26,6 +26,10 @@ export class PackUsecase {
         return await this.packRepository.getAll();
     }
 
+    async getLastOperDateByClient(client: Client): Promise<Date> {
+        return await this.packRepository.findLastOperDateById(client);
+    }
+
     async apply(body: ApplyPackDto) {
         console.log('pay pack')
         const pack = await this.packRepository.findOneById(body.packId);
