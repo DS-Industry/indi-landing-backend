@@ -75,7 +75,10 @@ export class PackRepository implements IPackRepository{
         const packUsage = await this.packUsageRepository.findOne({
             where:{
                 client: { clientId: client.clientId} as ClientEntity
-            }
+            },
+            order: {
+                dateUsage: 'DESC',
+            },
         })
         if (!packUsage) return null;
 
