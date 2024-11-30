@@ -65,6 +65,9 @@ export class AuthUsecase {
       throw new InvalidPasswordException(phone);
     }
     const card = await this.accountRepository.findOneByNomer(uniqNomer);
+    if (card.clientId) {
+      throw new InvalidOtpException(uniqNomer);
+    }
     //Generate token
     const accessToken = await this.signAccessToken(phone);
     const refreshToken = await this.signRefreshToken(phone);

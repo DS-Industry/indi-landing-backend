@@ -34,7 +34,7 @@ export class AccountRepository implements IAccountRepository {
     private readonly invitedCodeRepository: InvitedCodeRepository
   ) {}
 
-  async create(clientData: ICreateClientDto, card: Card, password: string): Promise<any> {
+  async create(clientData: ICreateClientDto, card: Card, password: string): Promise<Client> {
     const client: Client = Client.create(clientData);
     const newClient = await this.clientRepository.create(client);
 

@@ -9,12 +9,12 @@ export abstract class IAccountRepository {
     clientData: ICreateClientDto,
     card: Card,
     password: string,
-  ): Promise<any>;
+  ): Promise<Client>;
   abstract update(client: Client): Promise<any>;
   abstract findOneByPhoneNumber(phone: string): Promise<any>;
   abstract findOneClientById(clientId: number): Promise<Client>;
   abstract findOneByDevNomer(uniqNomer: string): Promise<any>;
-  abstract findOneByNomer(uniqNomer: string): Promise<any>;
+  abstract findOneByNomer(uniqNomer: string): Promise<Card>;
   abstract findPasswordByPhoneNumber(phone: string): Promise<any>;
   abstract changeTypeCard(cardId: number, newCardTypeId: number): Promise<any>;
   abstract changePassword(password: Password, newPassword: string): Promise<any>;
