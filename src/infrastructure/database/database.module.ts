@@ -18,12 +18,12 @@ import {InvitedCodeUsageEntity} from "../account/entity/invitedCodeUsage.entity"
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'oracle',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        sid: configService.get('DB_SID'),
+        type: 'postgres',
+        host: configService.get('DB_HOST') || configService.get('POSTGRES_HOST'),
+        port: Number(configService.get('DB_PORT') || configService.get('POSTGRES_PORT')),
+        username: configService.get('DB_USERNAME') || configService.get('POSTGRES_USER'),
+        password: configService.get('DB_PASSWORD') || configService.get('POSTGRES_PASSWORD'),
+        database: configService.get('DB_DATABASE') || configService.get('POSTGRES_DATABASE'),
         synchronize: false,
         entities: [
           ClientEntity,

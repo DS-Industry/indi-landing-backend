@@ -10,6 +10,7 @@ import {InvitedCodeUsageEntity} from "../entity/invitedCodeUsage.entity";
 import {ClientEntity} from "../entity/client.entity";
 import * as oracledb from 'oracledb';
 import {Card} from "../../../domain/account/card/model/card";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class InvitedCodeRepository implements IInvitedCodeRepository{
@@ -20,6 +21,7 @@ export class InvitedCodeRepository implements IInvitedCodeRepository{
         private readonly invitedCodeUsageRepository: Repository<InvitedCodeUsageEntity>,
         @InjectDataSource()
         private readonly dataSource: DataSource,
+        private readonly configService: ConfigService,
     ) {}
 
     public async apply(invitedCode: InvitedCode, owner: Client, user: Client): Promise<void> {
@@ -29,6 +31,11 @@ export class InvitedCodeRepository implements IInvitedCodeRepository{
         invitedCodeUsage.client = { clientId: user.clientId} as ClientEntity;
 
         await this.invitedCodeUsageRepository.save(invitedCodeUsage);
+
+        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
+        if (stubTransactions) {
+            return;
+        }
 
         const payIdOwner = this.generateUniqueExt();
         const cardOwner = owner.getCard();

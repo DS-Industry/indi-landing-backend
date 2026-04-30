@@ -10,6 +10,7 @@ import {SubscribeDto} from "../../../aplication/usecases/subscribe/dto/subscribe
 import {Card} from "../../../domain/account/card/model/card";
 import * as oracledb from 'oracledb';
 import {ReplenishmentDto} from "../../../api/subscribe/dto/replenishment.dto";
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
@@ -20,6 +21,7 @@ export class SubscribeRepository implements ISubscribeRepository{
         private readonly subscribeRepository: Repository<SubscribeEntity>,
         @InjectDataSource()
         private readonly dataSource: DataSource,
+        private readonly configService: ConfigService,
     ) {}
 
     async create(data: SubscribeDto, client: Client): Promise<any> {
@@ -88,6 +90,11 @@ export class SubscribeRepository implements ISubscribeRepository{
     }
 
     async replenishment(subscribe: ReplenishmentDto, amount: number, client: Client, card: Card){
+        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
+        if (stubTransactions) {
+            return 1;
+        }
+
         const addTransactionQuery = `begin :p0 := cwash.PAY_OPER_PKG.add_oper_open(:p1, :p2, :p3, :p4, :p5, :p6); end;`;
         const runAddPyamentQuery = await this.dataSource.query(
             addTransactionQuery,

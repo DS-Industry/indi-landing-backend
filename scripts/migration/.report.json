@@ -1,0 +1,57 @@
+{
+  "CRDCLIENT": {
+    "migrated": 839,
+    "failed": 0,
+    "lastOffset": 839
+  },
+  "CRDCARD": {
+    "migrated": 731,
+    "failed": 0,
+    "lastOffset": 731
+  },
+  "CRDCARD_TYPE": {
+    "migrated": 157,
+    "failed": 0,
+    "lastOffset": 157
+  },
+  "INDIAN_CLIENT_PSW": {
+    "migrated": 845,
+    "failed": 0,
+    "lastOffset": 845
+  },
+  "INDIAN_EMAIL_CODE": {
+    "migrated": 861,
+    "failed": 0,
+    "lastOffset": 861
+  },
+  "INDIAN_SUBSCRIBE": {
+    "migrated": 115,
+    "failed": 0,
+    "lastOffset": 115
+  },
+  "INDIAN_PACK_MIN": {
+    "migrated": 3,
+    "failed": 0,
+    "lastOffset": 3
+  },
+  "INDIAN_PACK_USAGE": {
+    "migrated": 1482,
+    "failed": 0,
+    "lastOffset": 1482
+  },
+  "INDIAN_REMAINS_PACK": {
+    "migrated": 577,
+    "failed": 0,
+    "lastOffset": 577
+  },
+  "INDIAN_INVITED_CODE": {
+    "migrated": 660,
+    "failed": 0,
+    "lastOffset": 660
+  },
+  "INDIAN_INVITED_CODE_USAGE": {
+    "migrated": 298,
+    "failed": 0,
+    "lastOffset": 298
+  }
+}

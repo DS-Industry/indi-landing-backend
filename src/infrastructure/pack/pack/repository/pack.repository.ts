@@ -10,6 +10,7 @@ import {AddPackDto} from "../../../../domain/pack/pack/dto/add-pack.dto";
 import {ClientEntity} from "../../../account/entity/client.entity";
 import * as oracledb from 'oracledb';
 import {Card} from "../../../../domain/account/card/model/card";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PackRepository implements IPackRepository{
@@ -21,6 +22,7 @@ export class PackRepository implements IPackRepository{
         private readonly packUsageRepository: Repository<PackUsageEntity>,
         @InjectDataSource()
         private readonly dataSource: DataSource,
+        private readonly configService: ConfigService,
     ) {}
 
     async apply(pack: Pack, client: Client, card: Card, payId: string): Promise<any> {
@@ -30,6 +32,11 @@ export class PackRepository implements IPackRepository{
         packUsage.client = { clientId: client.clientId} as ClientEntity;
 
         await this.packUsageRepository.save(packUsage);
+
+        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
+        if (stubTransactions) {
+            return 1;
+        }
 
         const addTransactionQuery = `begin :p0 := cwash.PAY_OPER_PKG.add_oper_open(:p1, :p2, :p3, :p4, :p5, :p6); end;`;
         const runAddPyamentQuery = await this.dataSource.query(

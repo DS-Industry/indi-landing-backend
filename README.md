@@ -71,3 +71,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Migration docs
+
+- Schema contract audit: `docs/migration/schema-contract-audit.md`
+- Big-bang runbook: `docs/migration/big-bang-cutover-runbook.md`
+- Data migration script guide: `scripts/migration/README.md`

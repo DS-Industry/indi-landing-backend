@@ -7,7 +7,7 @@ import { Card } from '../../../domain/account/card/model/card';
 import { Client } from '../../../domain/account/client/model/client';
 import { ClientEntity } from '../entity/client.entity';
 import { ClientRepository } from './client.repository';
-import * as oracledb from 'oracledb';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CardRepository implements ICardRepository {
@@ -16,6 +16,7 @@ export class CardRepository implements ICardRepository {
     private readonly cardRepository: Repository<CardEntity>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly configService: ConfigService,
   ) {}
   async create(card: Card, client: Client): Promise<Card> {
     const cardEntity = this.toCardEntity(card);
@@ -97,9 +98,13 @@ export class CardRepository implements ICardRepository {
   }
 
   async zeroingOut(card: Card, minusPoint: number): Promise<any>{
+    const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
+    if (stubTransactions) {
+      return 'SUCCESS';
+    }
 
     const addTransactionQuery = `begin cwash.card_pkg.add_oper(:p0, :p1, :p2, :p3, :p4); end;`;
-    const runAddPyamentQuery = await this.dataSource.query(
+    await this.dataSource.query(
         addTransactionQuery,
         [
           card.cardId,
