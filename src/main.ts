@@ -33,7 +33,7 @@ async function bootstrap() {
   app.use(require('body-parser').json());
 
   console.log(
-    `Application ${appName} ready to receive request in PORT - ${PORT}`,
+    `Application ${appName} ready to receive request in PORT 1 - ${PORT}`,
   );
 }
 bootstrap();
