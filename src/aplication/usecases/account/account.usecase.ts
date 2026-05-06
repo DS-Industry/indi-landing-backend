@@ -24,17 +24,6 @@ export class AccountUsecase {
     private readonly bcryptService: IBcrypt,
   ) {}
 
-  async getCardTariff(client: Client): Promise<TariffResponseDto> {
-    const card = client.getCard();
-    const tariff = await this.accountRepository.findCardTariff(card);
-
-    if (!tariff) throw new AccountNotFoundExceptions(client.correctPhone);
-
-    return {
-      cashBack: tariff.bonus,
-    };
-  }
-
   async getEmail(client: Client): Promise<string> {
     const otp = await this.otpRepository.findOnePhone(client.phone);
     return otp.email;

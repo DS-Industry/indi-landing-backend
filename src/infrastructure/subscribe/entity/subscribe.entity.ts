@@ -1,24 +1,24 @@
-import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {ClientEntity} from "../../account/entity/client.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { ClientEntity } from '../../account/entity/client.entity';
 
-@Entity({name: 'INDIAN_SUBSCRIBE', synchronize: false })
-export class SubscribeEntity{
-    @PrimaryGeneratedColumn({name: 'ID'})
-    id: number;
+@Entity({ name: 'INDIAN_SUBSCRIBE', synchronize: false })
+export class SubscribeEntity {
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
+  id: number;
 
-    @OneToOne(() => ClientEntity, (client: ClientEntity) => client.subscribe)
-    @JoinColumn({name: 'CLIENT_ID', referencedColumnName: 'clientId'})
-    client: ClientEntity;
+  @OneToOne(() => ClientEntity, (client) => client.subscribe)
+  @JoinColumn({ name: 'CLIENT_ID' })
+  client: ClientEntity;
 
-    @Column( {type: 'varchar2', length: 255, name: 'SUBSCRIBE_ID'})
-    subscribeId: string;
+  @Column({ name: 'SUBSCRIBE_ID', type: 'varchar', length: 255 })
+  subscribeId: string;
 
-    @Column({ type: 'date', name: 'CREATE_AT' })
-    createAt: Date;
+  @Column({ name: 'CREATE_AT', type: 'timestamp', nullable: true })
+  createAt: Date;
 
-    @Column( {type: 'varchar2', length: 255, name: 'STATUS'})
-    status: string;
+  @Column({ name: 'STATUS', type: 'varchar', length: 255 })
+  status: string;
 
-    @Column({ type: 'date', name: 'DATE_DEBITING' })
-    dateDebiting: Date;
+  @Column({ name: 'DATE_DEBITING', type: 'timestamp', nullable: true })
+  dateDebiting: Date;
 }

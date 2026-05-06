@@ -1,82 +1,41 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ClientEntity } from './client.entity';
 
-@Entity({ name: 'CRDCARD', synchronize: false })
+@Entity({ name: 'LTYCard', synchronize: false })
 export class CardEntity {
-  @PrimaryGeneratedColumn({ type: 'number', name: 'CARD_ID' })
+  @PrimaryGeneratedColumn({ name: 'id', type: 'int' })
   cardId: number;
 
-  @Column({ type: 'number', name: 'BALANCE' })
+  @Column({ name: 'balance', type: 'int', default: 0 })
   balance: number;
 
-  @Column({ type: 'number', name: 'IS_LOCKED', nullable: true })
-  isLocked: number;
+  @Column({ name: 'status', type: 'varchar', length: 20, nullable: true })
+  status: string | null;        // 'ACTIVE', 'INACTIVE'
 
-  @Column({ type: 'date', name: 'DATE_BEGIN', nullable: true })
+  @Column({ name: 'createdAt', type: 'timestamp', nullable: true })
   dateBegin: Date;
 
-  @Column({ type: 'date', name: 'DATE_END', nullable: true })
-  dateEnd: Date;
-
-  @ManyToOne(() => ClientEntity, (client: ClientEntity) => client.cards)
-  @JoinColumn({ name: 'CLIENT_ID' })
+  @ManyToOne(() => ClientEntity, (client) => client.cards)
+  @JoinColumn({ name: 'clientId' })
   client: ClientEntity;
 
-  @Column({ type: 'number', name: 'CARD_TYPE_ID' })
-  cardTypeId: number;
+  @Column({ name: 'type', type: 'varchar', length: 20 })
+  cardType: string;             // 'VIRTUAL' или 'PHYSICAL'
 
-  @Column({ type: 'varchar2', length: 30, name: 'DEV_NOMER' })
+  @Column({ name: 'unqNumber', length: 50 })
   devNomer: string;
 
-  @Column({ type: 'number', name: 'IS_DEL', nullable: true })
-  isDel: number;
-
-  @Column({ type: 'varchar2', length: 1000, name: 'AVTO', nullable: true })
-  avto: string;
-
-  @Column({ type: 'number', name: 'MONTH_LIMIT', nullable: true })
-  monthLimit: number;
-
-  @Column({ type: 'number', name: 'DISCOUNT', nullable: true })
-  discount: number;
-
-  @Column({ type: 'varchar2', length: 100, name: 'GOS_NOMER', nullable: true })
-  gosNomer: string;
-
-  @Column({ type: 'number', name: 'CMNCITY_ID', nullable: true })
-  cmnCity: number;
-
-  @Column({ type: 'number', name: 'REAL_BALANCE', nullable: true })
-  realBalance: number;
-
-  @Column({ type: 'number', name: 'AIR_BALANCE', nullable: true })
-  airBalance: number;
-
-  @Column({ type: 'number', name: 'KEY_BALANCE', nullable: true })
-  keyBalance: number;
-
-  @Column({ type: 'varchar2', length: 50, name: 'NOMER', nullable: true })
+  @Column({ name: 'number', length: 50 })
   nomer: string;
 
-  @Column({ type: 'number', name: 'MODEL_ID', nullable: true })
-  modelID: number;
+  @Column({ name: 'monthlyLimit', type: 'int', nullable: true })
+  monthLimit: number | null;
 
-  @Column({ type: 'varchar2', length: 4000, name: 'NOTE', nullable: true })
-  note: string;
+  // cardTierId – внешний ключ на LTYCardTier (таблица тарифов/скидок)
+  @Column({ name: 'cardTierId', type: 'int', nullable: true })
+  cardTierId: number | null;
 
-  @Column({ type: 'varchar2', length: 100, name: 'TAG', nullable: true })
-  tag: string;
-
-  @Column({ type: 'number', name: 'DAY_LIMIT', nullable: true })
-  dayLimit: number;
-
-  @Column({ type: 'number', name: 'MAIN_CARD_ID', nullable: true })
-  mainCardId: number;
+  // при необходимости можно добавить organizationId, но в старой сущности его не было
+  // @Column({ name: 'organizationId', type: 'int', nullable: true })
+  // organizationId: number | null;
 }
