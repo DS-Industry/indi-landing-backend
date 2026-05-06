@@ -1,80 +1,63 @@
-import { CardType } from '../enum/card-type.enum';
-import { ICreateCardDto } from '../dto/create-card.dto';
 import { CardEntity } from '../../../../infrastructure/account/entity/card.entity';
-import {Password} from "../../password/model/password";
+import { ICreateCardDto } from '../dto/create-card.dto';
+
+export type CardStatus = 'ACTIVE' | 'INACTIVE' | 'DELETED';
+export type CardType = 'VIRTUAL' | 'PHYSICAL';
 
 export class Card {
   cardId?: number;
   balance: number;
-  isLocked?: number;
+  status: CardStatus;
+  cardType: CardType;
   dateBegin: Date;
-  dateEnd?: Date;
   clientId?: number;
-  cardTypeId: CardType;
   devNomer: string;
-  isDel?: number;
-  cmnCity?: number;
-  realBalance: number;
-  airBalance: number;
   nomer: string;
-  tag?: string;
+  monthLimit: number | null;
+  cardTierId: number | null;
 
   private constructor(
-    cardTypeId: CardType,
+    cardType: CardType,
     nomer: string,
     devNomer: string,
     balance: number,
-    airBalance: number,
-    realBalance: number,
     dateBegin: Date,
     {
       cardId,
-      isLocked,
-      dateEnd,
-      isDel,
-      cmnCity,
-      tag,
       clientId,
+      status,
+      monthLimit,
+      cardTierId,
     }: {
       cardId?: number;
-      isLocked?: number;
-      dateEnd?: Date;
-      isDel?: number;
-      cmnCity?: number;
-      tag?: string;
       clientId?: number;
+      status?: CardStatus;
+      monthLimit?: number | null;
+      cardTierId?: number | null;
     },
   ) {
     this.cardId = cardId;
     this.clientId = clientId;
     this.balance = balance;
-    this.isLocked = isLocked;
+    this.status = status ?? 'ACTIVE';
+    this.cardType = cardType;
     this.dateBegin = dateBegin;
-    this.dateEnd = dateEnd;
-    this.cardTypeId = cardTypeId;
     this.devNomer = devNomer;
-    this.isDel = isDel;
-    this.cmnCity = cmnCity;
-    this.realBalance = realBalance;
-    this.airBalance = airBalance;
     this.nomer = nomer;
-    this.tag = tag;
+    this.monthLimit = monthLimit ?? null;
+    this.cardTierId = cardTierId ?? null;
   }
 
   public static create(data: ICreateCardDto): Card {
-    const { clientId, nomer, devNomer, cardTypeId, beginDate } = data;
+    const { clientId, nomer, devNomer, cardType, beginDate, monthLimit, cardTierId } = data;
     const balance = 0;
-    const airBalance = 0;
-    const realBalance = 0;
     return new Card(
-      cardTypeId,
+      cardType,
       nomer,
       devNomer,
       balance,
-      airBalance,
-      realBalance,
       beginDate,
-      { clientId },
+      { clientId, monthLimit, cardTierId },
     );
   }
 
@@ -82,42 +65,73 @@ export class Card {
     if (!this.clientId) this.clientId = clientId;
   }
 
+  public lock(): void {
+    this.status = 'INACTIVE';
+  }
+
+  public unlock(): void {
+    this.status = 'ACTIVE';
+  }
+
+  public delete(): void {
+    this.status = 'DELETED';
+  }
+
+  public isActive(): boolean {
+    return this.status === 'ACTIVE';
+  }
+
+  public isLocked(): boolean {
+    return this.status === 'INACTIVE';
+  }
+
+  public isDeleted(): boolean {
+    return this.status === 'DELETED';
+  }
+
   public static fromEntity(entity: CardEntity): Card {
     const {
       cardId,
       balance,
-      isLocked,
+      status,
       dateBegin,
-      dateEnd,
       client,
-      cardTypeId,
+      cardType,
       devNomer,
-      isDel,
-      cmnCity,
-      realBalance,
-      airBalance,
       nomer,
-      tag,
+      monthLimit,
+      cardTierId,
     } = entity;
 
     const card = new Card(
-      cardTypeId,
+      cardType as CardType,
       nomer,
       devNomer,
       balance,
-      airBalance,
-      realBalance,
       dateBegin,
       {
         cardId,
-        isLocked,
-        dateEnd,
-        isDel,
-        cmnCity,
-        tag,
+        clientId: client?.clientId,
+        status: status as CardStatus,
+        monthLimit,
+        cardTierId,
       },
     );
 
     return card;
+  }
+
+  public toEntity(): Omit<CardEntity, 'client'> {
+    const entity = new CardEntity();
+    entity.cardId = this.cardId;
+    entity.balance = this.balance;
+    entity.status = this.status;
+    entity.cardType = this.cardType;
+    entity.dateBegin = this.dateBegin;
+    entity.devNomer = this.devNomer;
+    entity.nomer = this.nomer;
+    entity.monthLimit = this.monthLimit;
+    entity.cardTierId = this.cardTierId;
+    return entity;
   }
 }

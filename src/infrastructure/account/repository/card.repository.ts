@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+
 import { ICardRepository } from '../../../domain/account/card/card-repository.abstract';
-import {InjectDataSource, InjectRepository} from '@nestjs/typeorm';
 import { CardEntity } from '../entity/card.entity';
-import {DataSource, Repository} from 'typeorm';
 import { Card } from '../../../domain/account/card/model/card';
 import { Client } from '../../../domain/account/client/model/client';
-import { ClientEntity } from '../entity/client.entity';
 import { ClientRepository } from './client.repository';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CardRepository implements ICardRepository {
@@ -20,122 +20,97 @@ export class CardRepository implements ICardRepository {
   ) {}
   async create(card: Card, client: Client): Promise<Card> {
     const cardEntity = this.toCardEntity(card);
-    const clientEntity = ClientRepository.toClientEntity(client);
+    cardEntity.client = ClientRepository.toClientEntity(client);
 
-    cardEntity.client = clientEntity;
-
-    const newCard = await this.cardRepository.save(cardEntity);
-    return Card.fromEntity(newCard);
+    const savedEntity = await this.cardRepository.save(cardEntity);
+    return Card.fromEntity(savedEntity);
   }
 
   async delete(cardId: number): Promise<void> {
-    return Promise.resolve(undefined);
+    await this.cardRepository.delete(cardId);
+  }
+
+  async lock(cardId: number): Promise<void> {
+    await this.cardRepository.update(cardId, { status: 'INACTIVE' });
+  }
+
+  async unlock(cardId: number): Promise<void> {
+    await this.cardRepository.update(cardId, { status: 'ACTIVE' });
   }
 
   async findByClientId(clientId: number): Promise<Card[]> {
-    const card = await this.cardRepository
+    const cards = await this.cardRepository
       .createQueryBuilder('card')
-      .leftJoin('card.client', 'client')
+      .leftJoinAndSelect('card.client', 'client')
       .where('client.clientId = :clientId', { clientId })
       .getMany();
 
-    const cards = card.map((cardEntity: CardEntity) =>
-      Card.fromEntity(cardEntity),
-    );
-
-    if (!cards) return null;
-
-    return cards;
+    return cards.map(cardEntity => Card.fromEntity(cardEntity));
   }
 
-  async findOneByDevNomer(devNomer: string): Promise<Card> {
-    const card = await this.cardRepository.findOne({
-      where: {
-        devNomer: devNomer,
-      },
+  async findOneByDevNomer(devNomer: string): Promise<Card | null> {
+    const cardEntity = await this.cardRepository.findOne({
+      where: { devNomer },
+      relations: ['client'],
     });
-
-    if (!card) return null;
-    return Card.fromEntity(card);
+    return cardEntity ? Card.fromEntity(cardEntity) : null;
   }
 
-  async findOneByNomer(nomer: string): Promise<Card> {
-    const card = await this.cardRepository.findOne({
-      where: {
-        nomer: nomer,
-      },
+  async findOneByNomer(nomer: string): Promise<Card | null> {
+    const cardEntity = await this.cardRepository.findOne({
+      where: { nomer },
+      relations: ['client'],
     });
-
-    if (!card) return null;
-    return Card.fromEntity(card);
+    return cardEntity ? Card.fromEntity(cardEntity) : null;
   }
 
-  async changeType(cardId: number, newCardTypeId: number): Promise<any> {
-    const card = await this.cardRepository.findOne({
-      where: {
-        cardId: cardId,
-      },
-    });
+  async changeType(cardId: number, newCardType: Card['cardType']): Promise<Card | null> {
+    const cardEntity = await this.cardRepository.findOne({ where: { cardId } });
+    if (!cardEntity) return null;
 
-    if (!card) return null;
-    card.cardTypeId = newCardTypeId;
-    await this.cardRepository.save(card);
-    return card;
+    cardEntity.cardType = newCardType;
+    const updated = await this.cardRepository.save(cardEntity);
+    return Card.fromEntity(updated);
   }
 
-  async changeClient(cardId: number, client: Client): Promise<any> {
+  async changeClient(cardId: number, client: Client): Promise<Card | null> {
     const clientEntity = ClientRepository.toClientEntity(client);
-    const card = await this.cardRepository.findOne({
-      where: {
-        cardId: cardId,
-      },
-    });
+    const cardEntity = await this.cardRepository.findOne({ where: { cardId } });
+    if (!cardEntity) return null;
 
-    if (!card) return null;
-    card.client = clientEntity;
-    await this.cardRepository.save(card);
-    return card;
+    cardEntity.client = clientEntity;
+    const updated = await this.cardRepository.save(cardEntity);
+    return Card.fromEntity(updated);
   }
 
-  async zeroingOut(card: Card, minusPoint: number): Promise<any>{
+  async zeroingOut(card: Card, minusPoint: number): Promise<any> {
     const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
     if (stubTransactions) {
       return 'SUCCESS';
     }
 
     const addTransactionQuery = `begin cwash.card_pkg.add_oper(:p0, :p1, :p2, :p3, :p4); end;`;
-    await this.dataSource.query(
-        addTransactionQuery,
-        [
-          card.cardId,
-          5,
-          minusPoint,
-          'Списание неиспользованных баллов по подписке',
-          3,
-        ],
-    );
+    await this.dataSource.query(addTransactionQuery, [
+      card.cardId,
+      5,
+      minusPoint,
+      'Списание неиспользованных баллов по подписке',
+      3,
+    ]);
     return 'SUCCESS';
   }
 
-  async lock(cardId: number): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   private toCardEntity(card: Card): CardEntity {
-    const cardEntity: CardEntity = new CardEntity();
-
-    cardEntity.isLocked = card.isLocked;
-    cardEntity.dateEnd = card.dateEnd;
-    cardEntity.cardTypeId = card.cardTypeId;
-    cardEntity.devNomer = card.devNomer;
-    cardEntity.isDel = card.isDel;
-    cardEntity.cmnCity = card.cmnCity;
-    cardEntity.nomer = card.nomer;
-    cardEntity.tag = card.tag;
-    cardEntity.balance = card.balance;
-    cardEntity.realBalance = card.realBalance;
-    cardEntity.airBalance = card.airBalance;
-
-    return cardEntity;
+    const entity = new CardEntity();
+    entity.cardId = card.cardId;
+    entity.balance = card.balance;
+    entity.status = card.status;
+    entity.cardType = card.cardType;
+    entity.dateBegin = card.dateBegin;
+    entity.devNomer = card.devNomer;
+    entity.nomer = card.nomer;
+    entity.monthLimit = card.monthLimit;
+    entity.cardTierId = card.cardTierId;
+    return entity;
   }
 }
