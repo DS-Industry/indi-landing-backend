@@ -1,20 +1,20 @@
-import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {ClientEntity} from "../../../account/entity/client.entity";
-import {PackEntity} from "./pack.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { ClientEntity } from '../../../account/entity/client.entity';
+import { PackEntity } from './pack.entity';
 
-@Entity({name: 'INDIAN_PACK_USAGE', synchronize: false})
-export class PackUsageEntity{
-    @PrimaryGeneratedColumn({name: 'ID'})
-    id: number;
+@Entity({ name: 'INDIAN_PACK_USAGE', synchronize: false })
+export class PackUsageEntity {
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
+  id: number;
 
-    @OneToOne(() => ClientEntity, (client: ClientEntity) => client.packUsage)
-    @JoinColumn({name: 'CLIENT_ID', referencedColumnName: 'clientId'})
-    client: ClientEntity;
+  @OneToOne(() => ClientEntity, (client) => client.packUsage)
+  @JoinColumn({ name: 'CLIENT_ID' })
+  client: ClientEntity;
 
-    @OneToOne(() => PackEntity, (pack: PackEntity) => pack.packUsage)
-    @JoinColumn({name: 'PACK_ID', referencedColumnName: 'id'})
-    pack: PackEntity;
+  @OneToOne(() => PackEntity, (pack) => pack.packUsage)
+  @JoinColumn({ name: 'PACK_ID' })
+  pack: PackEntity;
 
-    @Column({ type: 'date', name: 'DATE_USAGE' })
-    dateUsage: Date;
+  @Column({ name: 'DATE_USAGE', type: 'timestamp', nullable: true })
+  dateUsage: Date;
 }

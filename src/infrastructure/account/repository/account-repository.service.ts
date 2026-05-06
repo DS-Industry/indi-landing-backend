@@ -10,8 +10,6 @@ import { CardType } from '../../../domain/account/card/enum/card-type.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { TariffEntity } from '../entity/tariff.entity';
-import { Tariff } from '../../../domain/account/card/model/tariff';
 import {ICreatePasswordDto} from "../../../domain/account/password/dto/create-password.dto";
 import {Password} from "../../../domain/account/password/model/password";
 import {PasswordRepository} from "./password.repository";
@@ -26,8 +24,6 @@ import {OverdueCodeException} from "../../../domain/account/invitedCode/exceptio
 @Injectable()
 export class AccountRepository implements IAccountRepository {
   constructor(
-    @InjectRepository(TariffEntity)
-    private readonly tariffRepository: Repository<TariffEntity>,
     private readonly cardRepository: CardRepository,
     private readonly clientRepository: ClientRepository,
     private readonly passwordRepository: PasswordRepository,
@@ -64,17 +60,6 @@ export class AccountRepository implements IAccountRepository {
     return null;
   }
 
-  async findCardTariff(card: Card) {
-    const tariff = await this.tariffRepository.findOne({
-      where: {
-        cardTypeId: card.cardTypeId,
-      },
-    });
-
-    if (!tariff) return null;
-
-    return Tariff.fromEntity(tariff);
-  }
   async findOneByPhoneNumber(phone: any): Promise<any> {
     //TODO
     // 1) Find customer by phone number

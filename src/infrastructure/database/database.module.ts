@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientEntity } from '../account/entity/client.entity';
 import { CardEntity } from '../account/entity/card.entity';
-import { TariffEntity } from '../account/entity/tariff.entity';
 import { PasswordEntity } from '../account/entity/password.entity';
 import { SubscribeEntity } from '../subscribe/entity/subscribe.entity';
 import {OtpEntity} from "../otp/entity/otp.entity";
@@ -31,7 +30,6 @@ import {InvitedCodeUsageEntity} from "../account/entity/invitedCodeUsage.entity"
           PasswordEntity,
           InvitedCodeEntity,
           InvitedCodeUsageEntity,
-          TariffEntity,
           SubscribeEntity,
           OtpEntity,
           PackEntity,
