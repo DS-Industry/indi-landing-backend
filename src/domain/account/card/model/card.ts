@@ -51,14 +51,11 @@ export class Card {
   public static create(data: ICreateCardDto): Card {
     const { clientId, nomer, devNomer, cardType, beginDate, monthLimit, cardTierId } = data;
     const balance = 0;
-    return new Card(
-      cardType,
-      nomer,
-      devNomer,
-      balance,
-      beginDate,
-      { clientId, monthLimit, cardTierId },
-    );
+    return new Card(cardType, nomer, devNomer, balance, beginDate, {
+      clientId,
+      monthLimit,
+      cardTierId,
+    });
   }
 
   public addClientId(clientId: number): void {
@@ -81,12 +78,16 @@ export class Card {
     return this.status === 'ACTIVE';
   }
 
-  public isLocked(): boolean {
+  public isLockedBoolean(): boolean {
     return this.status === 'INACTIVE';
   }
 
   public isDeleted(): boolean {
     return this.status === 'DELETED';
+  }
+
+  get isLocked(): number {
+    return this.status === 'INACTIVE' ? 1 : 0;
   }
 
   public static fromEntity(entity: CardEntity): Card {
