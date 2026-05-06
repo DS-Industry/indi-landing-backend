@@ -113,7 +113,15 @@ export class AccountRepository implements IAccountRepository {
 
 
   async changeTypeCard(cardId: number, newCardTypeId: number): Promise<any> {
-    return await this.cardRepository.changeType(cardId, newCardTypeId);
+    const cardTypeMap: Record<number, CardType> = {
+      1: CardType.VIRTUAL,
+      2: CardType.PHYSICAL,
+    };
+    const newCardType = cardTypeMap[newCardTypeId];
+    if (!newCardType) {
+      throw new Error(`Incorrect card type: ${newCardTypeId}`);
+    }
+    return await this.cardRepository.changeType(cardId, newCardType);
   }
 
   async changePassword(password:Password, newPassword:string): Promise<any>{

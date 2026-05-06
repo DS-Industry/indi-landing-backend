@@ -13,83 +13,67 @@ export class ClientRepository implements IClientRepository {
   ) {}
 
   async create(client: Client): Promise<Client> {
-    const clientEntity = ClientRepository.toClientEntity(client);
+    const clientEntity = this.toClientEntity(client);
     const newClient = await this.clientRepository.save(clientEntity);
     return Client.fromEntity(newClient);
   }
 
-  async findOneByPhone(phone: string): Promise<Client> {
-    const client = await this.clientRepository
+  async findOneByPhone(phone: string): Promise<Client | null> {
+    const clientEntity = await this.clientRepository
       .createQueryBuilder('client')
-      .leftJoin('client.cards', 'cards')
-      .where('client.correctPhone = :phone', { phone: phone })
-      .select(['client', 'cards'])
-      .orderBy('INS_DATE', 'DESC')
-      .limit(1)
+      .leftJoinAndSelect('client.cards', 'cards')
+      .where('client.phone = :phone', { phone })
+      .orderBy('client.insDate', 'DESC')
       .getOne();
 
-    if (!client) return null;
-    return Client.fromEntity(client);
+    return clientEntity ? Client.fromEntity(clientEntity) : null;
   }
 
-  async findOneById(clientId: number): Promise<Client> {
-    const client = await this.clientRepository
-        .createQueryBuilder('client')
-        .leftJoin('client.cards', 'cards')
-        .where('client.clientId = :clientId', { clientId: clientId })
-        .select(['client', 'cards'])
-        .orderBy('INS_DATE', 'DESC')
-        .limit(1)
-        .getOne();
+  async findOneById(clientId: number): Promise<Client | null> {
+    const clientEntity = await this.clientRepository
+      .createQueryBuilder('client')
+      .leftJoinAndSelect('client.cards', 'cards')
+      .where('client.clientId = :clientId', { clientId })
+      .orderBy('client.insDate', 'DESC')
+      .getOne();
 
-    if (!client) return null;
-    return Client.fromEntity(client);
+    return clientEntity ? Client.fromEntity(clientEntity) : null;
   }
 
   async setRefreshToken(phone: string, token: string): Promise<void> {
-    const client: Client = await this.findOneByPhone(phone);
-
-    if (!client) {
-      return null;
-    }
-
-    client.refreshToken = token;
-
-    await this.clientRepository.save(client);
+    const clientEntity = await this.clientRepository.findOne({
+      where: { phone },
+    });
+    if (!clientEntity) return;
+    clientEntity.refreshToken = token;
+    await this.clientRepository.save(clientEntity);
   }
 
   async update(client: Client): Promise<any> {
-    const clientEntity = ClientRepository.toClientEntity(client);
-    const { clientId, ...updatedData } = clientEntity;
+    const clientEntity = this.toClientEntity(client);
+    const { clientId, ...updateData } = clientEntity;
+    const result = await this.clientRepository.update(clientId, updateData);
+    return result;
+  }
 
-    const updatedClient = await this.clientRepository.update(
-      {
-        clientId: clientId,
-      },
-      updatedData,
-    );
-
-    if (!updatedClient) return null;
-
-    return updatedClient;
+  private toClientEntity(client: Client): ClientEntity {
+    const entity = new ClientEntity();
+    entity.clientId = client.clientId;
+    entity.name = client.name;
+    entity.email = client.email;
+    entity.phone = client.phone;
+    entity.birthday = client.birthday;
+    entity.insDate = client.insDate;
+    entity.updDate = client.updDate;
+    entity.clientTypeId = client.clientTypeId;
+    entity.isActivated = client.isActivated;
+    entity.genderId = client.genderId;
+    entity.refreshToken = client.refreshToken;
+    return entity;
   }
 
   public static toClientEntity(client: Client): ClientEntity {
-    const clientEntity: ClientEntity = new ClientEntity();
-
-    clientEntity.clientId = client.clientId ? client.clientId : null;
-    clientEntity.name = client.name;
-    clientEntity.email = client.email;
-    clientEntity.phone = client.phone;
-    clientEntity.birthday = client.birthday;
-    clientEntity.clientTypeId = client.clientTypeId;
-    clientEntity.isActivated = client.isActivated;
-    clientEntity.genderId = client.genderId;
-    clientEntity.correctPhone = client.correctPhone;
-    clientEntity.refreshToken = client.refreshToken;
-    clientEntity.activatedDate = client.activatedDate;
-    clientEntity.userOnvi = client.userOnvi;
-
-    return clientEntity;
+    const repo = new ClientRepository(null as any);
+    return repo.toClientEntity(client);
   }
 }
