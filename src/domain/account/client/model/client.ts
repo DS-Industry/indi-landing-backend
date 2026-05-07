@@ -86,7 +86,7 @@ export class Client {
   }
 
   private static formatPhone(rawPhone: string): string {
-    return rawPhone.replace(/^\s*\+|\s*/g, '');
+    return rawPhone.replace(/[\s\-\(\)]/g, '');
   }
 
   private static generateDefaultName(phone: string): string {
