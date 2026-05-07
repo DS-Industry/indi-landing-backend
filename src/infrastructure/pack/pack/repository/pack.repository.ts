@@ -45,7 +45,7 @@ export class PackRepository implements IPackRepository{
                 { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
                 card.nomer,
                 client.email,
-                client.correctPhone,
+                client.phone,
                 pack.sumPoint,
                 payId,
                 new Date(),
