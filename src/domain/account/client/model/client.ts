@@ -2,7 +2,6 @@ import { Card } from '../../card/model/card';
 import { GenderType } from '../enum/gender.enum';
 import { ClientType } from '../enum/clinet-type.enum';
 import { ICreateClientDto } from '../dto/create-client.dto';
-import { ActivationStatusType } from '../enum/activation-status.enum';
 import { ClientEntity } from '../../../../infrastructure/account/entity/client.entity';
 import { CardEntity } from '../../../../infrastructure/account/entity/card.entity';
 import { ShortClientDto } from '../dto/short-client.dto';
@@ -146,7 +145,7 @@ export class Client {
       birthday,
       insDate,
       updDate,
-      clientTypeId,
+      contractType,
       isActivated,
       genderId,
       refreshToken,
@@ -154,6 +153,8 @@ export class Client {
       password,
       subscribe,
     } = entity;
+
+    const clientTypeId: ClientType = contractType === 'CORPORATE' ? ClientType.CORPORATE : ClientType.INDIVIDUAL;
 
     const cardModels = cards?.map(cardEntity => Card.fromEntity(cardEntity));
     const passwordModel = password ? Password.fromEntity(password) : undefined;

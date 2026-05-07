@@ -31,8 +31,8 @@ export class ClientEntity {
   updDate: Date;                     // → updatedAt
 
   @Column({ name: 'contractType', type: 'varchar', length: 50, default: 'INDIVIDUAL' })
-  clientTypeId: number;              // в домене число, маппим: 'INDIVIDUAL' → 1, 'CORPORATE' → 2
-
+  contractType: string;   // теперь хранит 'INDIVIDUAL' или 'CORPORATE'
+  
   @Column({ name: 'comment', type: 'text', nullable: true })
   note: string;                      // → comment
 

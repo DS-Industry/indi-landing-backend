@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ClientEntity } from '../entity/client.entity';
 import { Repository } from 'typeorm';
 import { Client } from '../../../domain/account/client/model/client';
+import { ClientType } from '../../../domain/account/client/enum/clinet-type.enum';
 
 @Injectable()
 export class ClientRepository implements IClientRepository {
@@ -65,7 +66,7 @@ export class ClientRepository implements IClientRepository {
     entity.birthday = client.birthday;
     entity.insDate = client.insDate;
     entity.updDate = client.updDate;
-    entity.clientTypeId = client.clientTypeId;
+    entity.contractType = client.clientTypeId === ClientType.CORPORATE ? 'CORPORATE' : 'INDIVIDUAL';
     entity.isActivated = client.isActivated;
     entity.genderId = client.genderId;
     entity.refreshToken = client.refreshToken;
