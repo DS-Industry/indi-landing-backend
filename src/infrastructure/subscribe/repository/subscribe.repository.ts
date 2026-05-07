@@ -102,7 +102,7 @@ export class SubscribeRepository implements ISubscribeRepository{
                 { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
                 card.nomer,
                 client.email,
-                client.correctPhone,
+                client.phone,
                 amount,
                 subscribe.payId,
                 new Date(),

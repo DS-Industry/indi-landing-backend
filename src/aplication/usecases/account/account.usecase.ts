@@ -38,7 +38,7 @@ export class AccountUsecase {
     const updatedClient = await this.accountRepository.update(client);
 
     if (!updatedClient)
-      throw new AccountNotFoundExceptions(client.correctPhone);
+      throw new AccountNotFoundExceptions(client.phone);
 
     return updatedClient;
   }
