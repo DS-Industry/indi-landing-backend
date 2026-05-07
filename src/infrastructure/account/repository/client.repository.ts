@@ -67,7 +67,7 @@ export class ClientRepository implements IClientRepository {
     entity.insDate = client.insDate;
     entity.updDate = client.updDate;
     entity.contractType = client.clientTypeId === ClientType.CORPORATE ? 'CORPORATE' : 'INDIVIDUAL';
-    entity.isActivated = client.isActivated;
+    entity.status = client.status;
     entity.genderId = client.genderId;
     entity.refreshToken = client.refreshToken;
     return entity;

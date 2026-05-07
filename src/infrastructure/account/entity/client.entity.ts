@@ -40,7 +40,7 @@ export class ClientEntity {
   avto: string;                      // → avto (старое поле, теперь infoCar)
 
   @Column({ name: 'status', type: 'varchar', length: 20, default: 'ACTIVE' })
-  isActivated: number;               // 1 → 'ACTIVE', 0 → 'INACTIVE'
+  status: string;        // 1 → 'ACTIVE', 0 → 'INACTIVE'
 
   @Column({ name: 'gender', type: 'varchar', length: 10, nullable: true })
   genderId: number;                  // маппим: 'MALE' → 1, 'FEMALE' → 2

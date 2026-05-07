@@ -8,6 +8,8 @@ import { ShortClientDto } from '../dto/short-client.dto';
 import { Password } from "../../password/model/password";
 import { Subscribe } from "../../../subscribe/model/subscribe.model";
 
+export type ClientStatus = 'ACTIVE' | 'BLOCKED' | 'DELETED' | 'VERIFICATE';
+
 export class Client {
   clientId?: number;
   name: string;
@@ -17,7 +19,7 @@ export class Client {
   insDate?: Date;
   updDate?: Date;
   clientTypeId: ClientType;
-  isActivated: number;
+  status: ClientStatus;
   genderId?: GenderType;
   refreshToken?: string;
   cards?: Card[];
@@ -30,7 +32,7 @@ export class Client {
     phone: string,
     clientType: ClientType,
     refreshToken: string,
-    isActivated: number,
+    status: ClientStatus,
     {
       clientId,
       email,
@@ -63,7 +65,7 @@ export class Client {
     this.birthday = birthday;
     this.cards = cards;
     this.insDate = insDate;
-    this.isActivated = isActivated;
+    this.status = status;
     this.updDate = updDate;
     this.genderId = genderId;
     this.clientId = clientId;
@@ -76,7 +78,7 @@ export class Client {
     const { rawPhone, clientType, refreshToken, cards, password, subscribe } = data;
     const phone = this.formatPhone(rawPhone);
     const name = this.generateDefaultName(phone);
-    return new Client(name, phone, clientType, refreshToken, 1, {
+    return new Client(name, phone, clientType, refreshToken, 'ACTIVE', {
       cards,
       password,
       subscribe
@@ -146,7 +148,7 @@ export class Client {
       insDate,
       updDate,
       contractType,
-      isActivated,
+      status,
       genderId,
       refreshToken,
       cards,
@@ -165,7 +167,7 @@ export class Client {
       phone,
       clientTypeId,
       refreshToken,
-      isActivated,
+      status as ClientStatus,
       {
         clientId,
         email,
