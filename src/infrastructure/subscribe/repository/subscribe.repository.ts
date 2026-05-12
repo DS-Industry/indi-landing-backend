@@ -20,7 +20,6 @@ export class SubscribeRepository implements ISubscribeRepository{
         private readonly subscribeRepository: Repository<SubscribeEntity>,
         @InjectDataSource()
         private readonly dataSource: DataSource,
-        private readonly configService: ConfigService,
         private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
     ) {}
 
@@ -90,10 +89,6 @@ export class SubscribeRepository implements ISubscribeRepository{
     }
 
     async replenishment(subscribe: ReplenishmentDto, amount: number, client: Client, card: Card){
-        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
-        if (stubTransactions) {
-            return 1;
-        }
 
         try {
             await this.createBonusOperUseCase.execute(

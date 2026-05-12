@@ -34,9 +34,9 @@ export class CardRepository implements ICardRepository {
   async lock(cardId: number): Promise<void> {
     await this.cardRepository.update(cardId, { status: 'INACTIVE' });
   }
-
+  
   async unlock(cardId: number): Promise<void> {
-    await this.cardRepository.update(cardId, { status: 'ACTIVE' });
+    await this.cardRepository.update(cardId, { status: null });
   }
 
   async findByClientId(clientId: number): Promise<Card[]> {
@@ -94,7 +94,7 @@ export class CardRepository implements ICardRepository {
     const entity = new CardEntity();
     entity.cardId = card.cardId;
     entity.balance = card.balance;
-    entity.status = card.status;
+    entity.status = card.status === 'ACTIVE' ? null : card.status;
     entity.cardType = card.cardType;
     entity.dateBegin = card.dateBegin;
     entity.devNomer = card.devNomer;

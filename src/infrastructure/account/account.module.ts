@@ -46,6 +46,6 @@ import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create
     AccountUsecase,
     CreateCardBonusOperUseCase
   ],
-  exports: [AccountRepositoryProvider, CreateCardBonusOperUseCase],
+  exports: [AccountRepositoryProvider, CardRepository, CreateCardBonusOperUseCase],
 })
 export class AccountModule {}

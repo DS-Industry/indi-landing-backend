@@ -22,7 +22,6 @@ export class PackRepository implements IPackRepository{
         private readonly packUsageRepository: Repository<PackUsageEntity>,
         @InjectDataSource()
         private readonly dataSource: DataSource,
-        private readonly configService: ConfigService,
         private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
     ) {}
 
@@ -33,11 +32,6 @@ export class PackRepository implements IPackRepository{
         packUsage.client = { clientId: client.clientId} as ClientEntity;
 
         await this.packUsageRepository.save(packUsage);
-
-        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
-        if (stubTransactions) {
-            return 1;
-        }
 
         try {
             await this.createBonusOperUseCase.execute(

@@ -78,7 +78,7 @@ export class AccountUsecase {
     await this.otpRepository.removeOne(email);
     const newOtp = await this.otpRepository.create(otp);
     await this.otpRepository.send(newOtp);
-
+    
     if (!newOtp) {
       throw new OtpInternalExceptions(email, otp.otp);
     }

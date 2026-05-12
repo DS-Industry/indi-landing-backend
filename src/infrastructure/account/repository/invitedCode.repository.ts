@@ -32,10 +32,6 @@ export class InvitedCodeRepository implements IInvitedCodeRepository{
 
         await this.invitedCodeUsageRepository.save(invitedCodeUsage);
 
-        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
-        if (stubTransactions) {
-            return;
-        }
 
         const cardOwner = owner.getCard();
         if (cardOwner) {
