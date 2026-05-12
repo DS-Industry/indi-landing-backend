@@ -16,6 +16,9 @@ import {BcryptModule} from "../services/bcrypt/bcrypt.module";
 import {InvitedCodeRepository} from "./repository/invitedCode.repository";
 import {InvitedCodeEntity} from "./entity/invitedCode.entity";
 import {InvitedCodeUsageEntity} from "./entity/invitedCodeUsage.entity";
+import { BonusOperEntity } from './entity/bonus-oper.entity';
+import { BonusOperTypeEntity } from './entity/bonus-oper-type.entity';
+import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create-card-bonus-oper.use-case';
 
 @Module({
   imports: [
@@ -26,6 +29,8 @@ import {InvitedCodeUsageEntity} from "./entity/invitedCodeUsage.entity";
       SubscribeEntity,
       InvitedCodeEntity,
       InvitedCodeUsageEntity,
+      BonusOperEntity,
+      BonusOperTypeEntity,
     ]),
     DateModule,
     OtpModule,
@@ -39,7 +44,8 @@ import {InvitedCodeUsageEntity} from "./entity/invitedCodeUsage.entity";
     PasswordRepository,
     InvitedCodeRepository,
     AccountUsecase,
+    CreateCardBonusOperUseCase
   ],
-  exports: [AccountRepositoryProvider],
+  exports: [AccountRepositoryProvider, CreateCardBonusOperUseCase],
 })
 export class AccountModule {}

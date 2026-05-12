@@ -1,0 +1,4 @@
+export enum SignOperType {
+  REPLENISHMENT = 'REPLENISHMENT',
+  DEDUCTION = 'DEDUCTION'
+}

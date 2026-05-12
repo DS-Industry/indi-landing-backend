@@ -95,9 +95,15 @@ export class CardRepository implements ICardRepository {
       5,
       minusPoint,
       'Списание неиспользованных баллов по подписке',
-      3,
+      3, 
     ]);
     return 'SUCCESS';
+  }
+  
+  async update(card: Card): Promise<Card> {
+    const entity = this.toCardEntity(card);
+    const updated = await this.cardRepository.save(entity);
+    return Card.fromEntity(updated);
   }
 
   private toCardEntity(card: Card): CardEntity {
