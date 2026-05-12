@@ -26,28 +26,28 @@ export class PackRepository implements IPackRepository{
     ) {}
 
     async apply(pack: Pack, client: Client, card: Card, payId: string): Promise<any> {
-        const packUsage = new PackUsageEntity();
+      const packUsage = new PackUsageEntity();
 
-        packUsage.pack = { id: pack.id } as PackEntity;
-        packUsage.client = { clientId: client.clientId} as ClientEntity;
-
-        await this.packUsageRepository.save(packUsage);
-
-        try {
-            await this.createBonusOperUseCase.execute(
-                {
-                    typeOperId: 6,
-                    operDate: new Date(),
-                    sum: pack.sumPoint,
-                },
-                card,
-            );
-            return 1;
-        } catch (error) {
-            console.error('Error during pack bonus accrual:', error);
-            throw error;
-        }
-    }
+      packUsage.pack = { id: pack.id } as PackEntity;
+      packUsage.client = { clientId: client.clientId} as ClientEntity;
+      packUsage.dateUsage = new Date();
+      await this.packUsageRepository.save(packUsage);
+  
+      try {
+          await this.createBonusOperUseCase.execute(
+              {
+                  typeOperId: 6,
+                  operDate: new Date(),
+                  sum: pack.sumPoint,
+              },
+              card,
+          );
+          return 1;
+      } catch (error) {
+          console.error('Error during pack bonus accrual:', error);
+          throw error;
+      }
+  }
 
     async create(data: AddPackDto): Promise<Pack> {
         const packEntity: PackEntity = new PackEntity();
