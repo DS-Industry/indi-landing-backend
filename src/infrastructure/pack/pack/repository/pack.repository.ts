@@ -8,9 +8,9 @@ import {Pack} from "../../../../domain/pack/pack/model/pack.model";
 import {Client} from "../../../../domain/account/client/model/client";
 import {AddPackDto} from "../../../../domain/pack/pack/dto/add-pack.dto";
 import {ClientEntity} from "../../../account/entity/client.entity";
-import * as oracledb from 'oracledb';
 import {Card} from "../../../../domain/account/card/model/card";
 import { ConfigService } from '@nestjs/config';
+import { CreateCardBonusOperUseCase } from "src/aplication/usecases/bonus/create-card-bonus-oper.use-case";
 
 @Injectable()
 export class PackRepository implements IPackRepository{
@@ -23,6 +23,7 @@ export class PackRepository implements IPackRepository{
         @InjectDataSource()
         private readonly dataSource: DataSource,
         private readonly configService: ConfigService,
+        private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
     ) {}
 
     async apply(pack: Pack, client: Client, card: Card, payId: string): Promise<any> {
@@ -38,20 +39,20 @@ export class PackRepository implements IPackRepository{
             return 1;
         }
 
-        const addTransactionQuery = `begin :p0 := cwash.PAY_OPER_PKG.add_oper_open(:p1, :p2, :p3, :p4, :p5, :p6); end;`;
-        const runAddPyamentQuery = await this.dataSource.query(
-            addTransactionQuery,
-            [
-                { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
-                card.nomer,
-                client.email,
-                client.phone,
-                pack.sumPoint,
-                payId,
-                new Date(),
-            ],
-        );
-        return runAddPyamentQuery[0];
+        try {
+            await this.createBonusOperUseCase.execute(
+                {
+                    typeOperId: 6,
+                    operDate: new Date(),
+                    sum: pack.sumPoint,
+                },
+                card,
+            );
+            return 1;
+        } catch (error) {
+            console.error('Error during pack bonus accrual:', error);
+            throw error;
+        }
     }
 
     async create(data: AddPackDto): Promise<Pack> {
@@ -124,6 +125,4 @@ export class PackRepository implements IPackRepository{
 
         return packEntity;
     }
-
-
 }

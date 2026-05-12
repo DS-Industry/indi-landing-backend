@@ -8,6 +8,7 @@ import { CardEntity } from '../entity/card.entity';
 import { Card } from '../../../domain/account/card/model/card';
 import { Client } from '../../../domain/account/client/model/client';
 import { ClientRepository } from './client.repository';
+import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create-card-bonus-oper.use-case';
 
 @Injectable()
 export class CardRepository implements ICardRepository {
@@ -17,6 +18,7 @@ export class CardRepository implements ICardRepository {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
+    private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
   ) {}
   async create(card: Card, client: Client): Promise<Card> {
     const cardEntity = this.toCardEntity(card);
@@ -89,17 +91,17 @@ export class CardRepository implements ICardRepository {
       return 'SUCCESS';
     }
 
-    const addTransactionQuery = `begin cwash.card_pkg.add_oper(:p0, :p1, :p2, :p3, :p4); end;`;
-    await this.dataSource.query(addTransactionQuery, [
-      card.cardId,
-      5,
-      minusPoint,
-      'Списание неиспользованных баллов по подписке',
-      3, 
-    ]);
+    await this.createBonusOperUseCase.execute(
+      {
+        typeOperId: 5,
+        operDate: new Date(),
+        sum: minusPoint,
+      },
+      card,
+    );
     return 'SUCCESS';
   }
-  
+
   async update(card: Card): Promise<Card> {
     const entity = this.toCardEntity(card);
     const updated = await this.cardRepository.save(entity);
