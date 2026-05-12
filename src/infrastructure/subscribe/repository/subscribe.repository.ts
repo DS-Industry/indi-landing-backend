@@ -8,10 +8,9 @@ import {Client} from "../../../domain/account/client/model/client";
 import {ClientRepository} from "../../account/repository/client.repository";
 import {SubscribeDto} from "../../../aplication/usecases/subscribe/dto/subscribe.dto";
 import {Card} from "../../../domain/account/card/model/card";
-import * as oracledb from 'oracledb';
 import {ReplenishmentDto} from "../../../api/subscribe/dto/replenishment.dto";
 import { ConfigService } from '@nestjs/config';
-
+import { CreateCardBonusOperUseCase } from "src/aplication/usecases/bonus/create-card-bonus-oper.use-case";
 
 @Injectable()
 export class SubscribeRepository implements ISubscribeRepository{
@@ -21,7 +20,7 @@ export class SubscribeRepository implements ISubscribeRepository{
         private readonly subscribeRepository: Repository<SubscribeEntity>,
         @InjectDataSource()
         private readonly dataSource: DataSource,
-        private readonly configService: ConfigService,
+        private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
     ) {}
 
     async create(data: SubscribeDto, client: Client): Promise<any> {
@@ -90,25 +89,21 @@ export class SubscribeRepository implements ISubscribeRepository{
     }
 
     async replenishment(subscribe: ReplenishmentDto, amount: number, client: Client, card: Card){
-        const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
-        if (stubTransactions) {
-            return 1;
-        }
 
-        const addTransactionQuery = `begin :p0 := cwash.PAY_OPER_PKG.add_oper_open(:p1, :p2, :p3, :p4, :p5, :p6); end;`;
-        const runAddPyamentQuery = await this.dataSource.query(
-            addTransactionQuery,
-            [
-                { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
-                card.nomer,
-                client.email,
-                client.phone,
-                amount,
-                subscribe.payId,
-                new Date(),
-            ],
-        );
-        return runAddPyamentQuery[0];
+        try {
+            await this.createBonusOperUseCase.execute(
+                {
+                    typeOperId: 6,
+                    operDate: new Date(),
+                    sum: amount,
+                },
+                card,
+            );
+            return 1;
+        } catch (error) {
+            console.error('Error during replenishment bonus accrual:', error);
+            throw error;
+        }
     }
 
     async findAllActive(): Promise<any>{

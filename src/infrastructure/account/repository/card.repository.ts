@@ -8,6 +8,7 @@ import { CardEntity } from '../entity/card.entity';
 import { Card } from '../../../domain/account/card/model/card';
 import { Client } from '../../../domain/account/client/model/client';
 import { ClientRepository } from './client.repository';
+import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create-card-bonus-oper.use-case';
 
 @Injectable()
 export class CardRepository implements ICardRepository {
@@ -33,9 +34,9 @@ export class CardRepository implements ICardRepository {
   async lock(cardId: number): Promise<void> {
     await this.cardRepository.update(cardId, { status: 'INACTIVE' });
   }
-
+  
   async unlock(cardId: number): Promise<void> {
-    await this.cardRepository.update(cardId, { status: 'ACTIVE' });
+    await this.cardRepository.update(cardId, { status: null });
   }
 
   async findByClientId(clientId: number): Promise<Card[]> {
@@ -83,28 +84,17 @@ export class CardRepository implements ICardRepository {
     return Card.fromEntity(updated);
   }
 
-  async zeroingOut(card: Card, minusPoint: number): Promise<any> {
-    const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
-    if (stubTransactions) {
-      return 'SUCCESS';
-    }
-
-    const addTransactionQuery = `begin cwash.card_pkg.add_oper(:p0, :p1, :p2, :p3, :p4); end;`;
-    await this.dataSource.query(addTransactionQuery, [
-      card.cardId,
-      5,
-      minusPoint,
-      'Списание неиспользованных баллов по подписке',
-      3,
-    ]);
-    return 'SUCCESS';
+  async update(card: Card): Promise<Card> {
+    const entity = this.toCardEntity(card);
+    const updated = await this.cardRepository.save(entity);
+    return Card.fromEntity(updated);
   }
 
   private toCardEntity(card: Card): CardEntity {
     const entity = new CardEntity();
     entity.cardId = card.cardId;
     entity.balance = card.balance;
-    entity.status = card.status;
+    entity.status = card.status === 'ACTIVE' ? null : card.status;
     entity.cardType = card.cardType;
     entity.dateBegin = card.dateBegin;
     entity.devNomer = card.devNomer;

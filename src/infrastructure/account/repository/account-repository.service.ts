@@ -20,6 +20,7 @@ import {InvitedCodeEnum} from "../../../domain/account/invitedCode/enum/invited-
 import {InvalidOtpException} from "../../../domain/auth/exceptions/invalid-otp.exception";
 import {NotFoundCodeException} from "../../../domain/account/invitedCode/exception/not-found-code.exception";
 import {OverdueCodeException} from "../../../domain/account/invitedCode/exception/overdue-code.exception";
+import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create-card-bonus-oper.use-case';
 
 @Injectable()
 export class AccountRepository implements IAccountRepository {
@@ -27,7 +28,8 @@ export class AccountRepository implements IAccountRepository {
     private readonly cardRepository: CardRepository,
     private readonly clientRepository: ClientRepository,
     private readonly passwordRepository: PasswordRepository,
-    private readonly invitedCodeRepository: InvitedCodeRepository
+    private readonly invitedCodeRepository: InvitedCodeRepository,
+    private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
   ) {}
 
   async create(clientData: ICreateClientDto, card: Card, password: string): Promise<Client> {
@@ -133,7 +135,14 @@ export class AccountRepository implements IAccountRepository {
   }
 
   async zeroingOut(card: Card, minusPoint: number): Promise<any> {
-    await this.cardRepository.zeroingOut(card, minusPoint);
+    await this.createBonusOperUseCase.execute(
+      {
+        typeOperId: 5,
+        operDate: new Date(),
+        sum: minusPoint,
+      },
+      card,
+    );
   }
 
   async getInvitedCode(client:Client): Promise<any> {

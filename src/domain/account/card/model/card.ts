@@ -103,7 +103,7 @@ export class Card {
       monthLimit,
       cardTierId,
     } = entity;
-
+  
     const card = new Card(
       cardType as CardType,
       nomer,
@@ -113,7 +113,7 @@ export class Card {
       {
         cardId,
         clientId: client?.clientId,
-        status: status as CardStatus,
+        status: status === null ? 'ACTIVE' : status as CardStatus,
         monthLimit,
         cardTierId,
       },

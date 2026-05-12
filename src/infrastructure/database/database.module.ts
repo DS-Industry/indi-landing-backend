@@ -11,6 +11,8 @@ import {PackUsageEntity} from "../pack/pack/entity/pack-usage.entity";
 import {RemainsPackEntity} from "../pack/remains/entity/remains-pack.entity";
 import {InvitedCodeEntity} from "../account/entity/invitedCode.entity";
 import {InvitedCodeUsageEntity} from "../account/entity/invitedCodeUsage.entity";
+import { BonusOperEntity } from '../account/entity/bonus-oper.entity';
+import { BonusOperTypeEntity } from '../account/entity/bonus-oper-type.entity';
 
 @Module({
   imports: [
@@ -34,7 +36,9 @@ import {InvitedCodeUsageEntity} from "../account/entity/invitedCodeUsage.entity"
           OtpEntity,
           PackEntity,
           PackUsageEntity,
-          RemainsPackEntity
+          RemainsPackEntity,
+          BonusOperEntity,
+          BonusOperTypeEntity,
         ],
       }),
       inject: [ConfigService],
