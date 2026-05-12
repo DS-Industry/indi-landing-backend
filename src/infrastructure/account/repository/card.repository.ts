@@ -18,7 +18,6 @@ export class CardRepository implements ICardRepository {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
-    private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
   ) {}
   async create(card: Card, client: Client): Promise<Card> {
     const cardEntity = this.toCardEntity(card);
@@ -83,23 +82,6 @@ export class CardRepository implements ICardRepository {
     cardEntity.client = clientEntity;
     const updated = await this.cardRepository.save(cardEntity);
     return Card.fromEntity(updated);
-  }
-
-  async zeroingOut(card: Card, minusPoint: number): Promise<any> {
-    const stubTransactions = this.configService.get<string>('DB_FEATURE_STUB_TRANSACTIONS') === 'true';
-    if (stubTransactions) {
-      return 'SUCCESS';
-    }
-
-    await this.createBonusOperUseCase.execute(
-      {
-        typeOperId: 5,
-        operDate: new Date(),
-        sum: minusPoint,
-      },
-      card,
-    );
-    return 'SUCCESS';
   }
 
   async update(card: Card): Promise<Card> {

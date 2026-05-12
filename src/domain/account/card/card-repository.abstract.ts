@@ -11,6 +11,5 @@ export abstract class ICardRepository {
   abstract lock(cardId: number): Promise<void>;
   abstract unlock(cardId: number): Promise<void>;
   abstract changeClient(cardId: number, client: Client): Promise<Card | null>;
-  abstract zeroingOut(card: Card, minusPoint: number): Promise<any>;
   abstract update(card: Card): Promise<Card>;
 }
