@@ -68,30 +68,6 @@ export class AccountController {
   }
 
   @UseGuards(JwtGuard)
-  @Get('/tariff')
-  @HttpCode(200)
-  async getAccountNotifications(@Req() request: any): Promise<any> {
-    try {
-      const { user } = request;
-      return await this.accountUsecase.getCardTariff(user);
-    } catch (e) {
-      if (e instanceof AccountNotFoundExceptions) {
-        throw new CustomHttpException({
-          type: e.type,
-          innerCode: e.innerCode,
-          message: e.message,
-          code: HttpStatus.NOT_FOUND,
-        });
-      } else {
-        throw new CustomHttpException({
-          message: e.message,
-          code: HttpStatus.INTERNAL_SERVER_ERROR,
-        });
-      }
-    }
-  }
-
-  @UseGuards(JwtGuard)
   @Post('/changePassword')
   @HttpCode(201)
   async changePassword(@Body() changeRequest: ChangePasswordRequestDto, @Req() req: any) {

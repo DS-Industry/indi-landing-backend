@@ -1,3 +1,4 @@
 export enum CardType {
-  ONVI = 2086,
+  VIRTUAL = "VIRTUAL",
+  PHYSICAL = "PHYSICAL"
 }

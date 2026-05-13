@@ -1,15 +1,15 @@
-import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {ClientEntity} from "../../../account/entity/client.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { ClientEntity } from '../../../account/entity/client.entity';
 
-@Entity({name: 'INDIAN_REMAINS_PACK', synchronize: false})
-export class RemainsPackEntity{
-    @PrimaryGeneratedColumn({name: 'ID'})
-    id: number;
+@Entity({ name: 'INDIAN_REMAINS_PACK', synchronize: false })
+export class RemainsPackEntity {
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
+  id: number;
 
-    @OneToOne(() => ClientEntity, (client: ClientEntity) => client.remainsPack)
-    @JoinColumn({name: 'CLIENT_ID', referencedColumnName: 'clientId'})
-    client: ClientEntity;
+  @OneToOne(() => ClientEntity, (client) => client.remainsPack)
+  @JoinColumn({ name: 'CLIENT_ID' })
+  client: ClientEntity;
 
-    @Column({type:'number', name: 'REMAINS_POINT'})
-    remainsPoint: number;
+  @Column({ name: 'REMAINS_POINT', type: 'int' })
+  remainsPoint: number;
 }

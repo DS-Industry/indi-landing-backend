@@ -1,23 +1,23 @@
-import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {PackUsageEntity} from "./pack-usage.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { PackUsageEntity } from './pack-usage.entity';
 
-@Entity({name: 'INDIAN_PACK_MIN', synchronize: false })
-export class PackEntity{
-    @PrimaryGeneratedColumn({name: 'ID'})
-    id: number;
+@Entity({ name: 'INDIAN_PACK_MIN', synchronize: false })
+export class PackEntity {
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
+  id: number;
 
-    @Column( {type: 'varchar2', length: 255, name: 'NAME'})
-    name: string;
+  @Column({ name: 'NAME', type: 'varchar', length: 255 })
+  name: string;
 
-    @Column( {type: 'varchar2', length: 255, name: 'DESCRIPTION'})
-    description: string;
+  @Column({ name: 'DESCRIPTION', type: 'varchar', length: 255, nullable: true })
+  description: string;
 
-    @Column({type: 'number', name: 'SUM_MONEY'})
-    sumMoney: number;
+  @Column({ name: 'SUM_MONEY', type: 'int' })
+  sumMoney: number;
 
-    @Column({type: 'number', name: 'SUM_POINT'})
-    sumPoint: number;
+  @Column({ name: 'SUM_POINT', type: 'int' })
+  sumPoint: number;
 
-    @OneToOne( () => PackUsageEntity, (packUsage: PackUsageEntity) => packUsage.pack)
-    packUsage: PackUsageEntity;
+  @OneToOne(() => PackUsageEntity, (packUsage) => packUsage.pack)
+  packUsage: PackUsageEntity;
 }

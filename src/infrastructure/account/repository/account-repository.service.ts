@@ -10,8 +10,6 @@ import { CardType } from '../../../domain/account/card/enum/card-type.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { TariffEntity } from '../entity/tariff.entity';
-import { Tariff } from '../../../domain/account/card/model/tariff';
 import {ICreatePasswordDto} from "../../../domain/account/password/dto/create-password.dto";
 import {Password} from "../../../domain/account/password/model/password";
 import {PasswordRepository} from "./password.repository";
@@ -22,16 +20,16 @@ import {InvitedCodeEnum} from "../../../domain/account/invitedCode/enum/invited-
 import {InvalidOtpException} from "../../../domain/auth/exceptions/invalid-otp.exception";
 import {NotFoundCodeException} from "../../../domain/account/invitedCode/exception/not-found-code.exception";
 import {OverdueCodeException} from "../../../domain/account/invitedCode/exception/overdue-code.exception";
+import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create-card-bonus-oper.use-case';
 
 @Injectable()
 export class AccountRepository implements IAccountRepository {
   constructor(
-    @InjectRepository(TariffEntity)
-    private readonly tariffRepository: Repository<TariffEntity>,
     private readonly cardRepository: CardRepository,
     private readonly clientRepository: ClientRepository,
     private readonly passwordRepository: PasswordRepository,
-    private readonly invitedCodeRepository: InvitedCodeRepository
+    private readonly invitedCodeRepository: InvitedCodeRepository,
+    private readonly createBonusOperUseCase: CreateCardBonusOperUseCase,
   ) {}
 
   async create(clientData: ICreateClientDto, card: Card, password: string): Promise<Client> {
@@ -64,17 +62,6 @@ export class AccountRepository implements IAccountRepository {
     return null;
   }
 
-  async findCardTariff(card: Card) {
-    const tariff = await this.tariffRepository.findOne({
-      where: {
-        cardTypeId: card.cardTypeId,
-      },
-    });
-
-    if (!tariff) return null;
-
-    return Tariff.fromEntity(tariff);
-  }
   async findOneByPhoneNumber(phone: any): Promise<any> {
     //TODO
     // 1) Find customer by phone number
@@ -128,7 +115,15 @@ export class AccountRepository implements IAccountRepository {
 
 
   async changeTypeCard(cardId: number, newCardTypeId: number): Promise<any> {
-    return await this.cardRepository.changeType(cardId, newCardTypeId);
+    const cardTypeMap: Record<number, CardType> = {
+      1: CardType.VIRTUAL,
+      2: CardType.PHYSICAL,
+    };
+    const newCardType = cardTypeMap[newCardTypeId];
+    if (!newCardType) {
+      throw new Error(`Incorrect card type: ${newCardTypeId}`);
+    }
+    return await this.cardRepository.changeType(cardId, newCardType);
   }
 
   async changePassword(password:Password, newPassword:string): Promise<any>{
@@ -140,7 +135,14 @@ export class AccountRepository implements IAccountRepository {
   }
 
   async zeroingOut(card: Card, minusPoint: number): Promise<any> {
-    await this.cardRepository.zeroingOut(card, minusPoint);
+    await this.createBonusOperUseCase.execute(
+      {
+        typeOperId: 5,
+        operDate: new Date(),
+        sum: minusPoint,
+      },
+      card,
+    );
   }
 
   async getInvitedCode(client:Client): Promise<any> {

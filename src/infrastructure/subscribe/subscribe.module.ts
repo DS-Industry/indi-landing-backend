@@ -7,9 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscribeEntity } from './entity/subscribe.entity';
 import { AccountModule } from '../account/account.module';
 import {PackModule} from "../pack/pack/pack.module";
+import { BonusOperEntity } from '../account/entity/bonus-oper.entity';
+import { BonusOperTypeEntity } from '../account/entity/bonus-oper-type.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SubscribeEntity]), AccountModule, PackModule],
+  imports: [TypeOrmModule.forFeature([SubscribeEntity, BonusOperEntity, BonusOperTypeEntity]), AccountModule, PackModule],
   controllers: [SubscribeController],
   providers: [
     SubscribeUsecase,

@@ -2,6 +2,6 @@ export interface ShortCardDto {
   number: string;
   unqNumber: string;
   balance: number;
-  isLocked: number | null;
+  isLocked: number;
   dateBegin: Date;
 }
