@@ -118,7 +118,7 @@ export class Client {
   public getAccountInfo(): ShortClientDto {
     const mainCard = this.getCard();
     if (!mainCard) {
-      throw new Error('У клиента нет активных карт');
+      throw new Error(`The client with id ${this.clientId} has no active cards`);
     }
     return {
       id: this.clientId!,

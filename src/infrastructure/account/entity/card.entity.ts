@@ -10,7 +10,7 @@ export class CardEntity {
   balance: number;
 
   @Column({ name: 'status', type: 'varchar', length: 20, nullable: true })
-  status: string | null;        // 'ACTIVE', 'INACTIVE'
+  status: string | null;        // 'INACTIVE'
 
   @Column({ name: 'createdAt', type: 'timestamp', nullable: true })
   dateBegin: Date;
@@ -31,11 +31,6 @@ export class CardEntity {
   @Column({ name: 'monthlyLimit', type: 'int', nullable: true })
   monthLimit: number | null;
 
-  // cardTierId – внешний ключ на LTYCardTier (таблица тарифов/скидок)
   @Column({ name: 'cardTierId', type: 'int', nullable: true })
   cardTierId: number | null;
-
-  // при необходимости можно добавить organizationId, но в старой сущности его не было
-  // @Column({ name: 'organizationId', type: 'int', nullable: true })
-  // organizationId: number | null;
 }
