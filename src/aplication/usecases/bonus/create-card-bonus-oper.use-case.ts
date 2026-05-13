@@ -21,7 +21,7 @@ export class CreateCardBonusOperUseCase {
   async execute(input: CreateBonusOperDto, card: Card): Promise<BonusOperEntity> {
     const operType = await this.operTypeRepo.findOne({ where: { id: input.typeOperId } });
     if (!operType) {
-      throw new NotFoundException(`Тип операции с id ${input.typeOperId} не найден`);
+      throw new NotFoundException(`Operation type with id ${input.typeOperId} not found`);
     }
 
     if (operType.signOper === SignOperType.DEDUCTION) {
