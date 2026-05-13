@@ -15,6 +15,8 @@ export class ClientRepository implements IClientRepository {
 
   async create(client: Client): Promise<Client> {
     const clientEntity = this.toClientEntity(client);
+    clientEntity.insDate = clientEntity.insDate || new Date();
+    clientEntity.updDate = clientEntity.updDate || new Date();
     const newClient = await this.clientRepository.save(clientEntity);
     return Client.fromEntity(newClient);
   }
@@ -53,9 +55,10 @@ export class ClientRepository implements IClientRepository {
   async update(client: Client): Promise<any> {
     const clientEntity = this.toClientEntity(client);
     const { clientId, ...updateData } = clientEntity;
+    updateData.updDate = new Date();
     const result = await this.clientRepository.update(clientId, updateData);
     return result;
-  }
+}
 
   private toClientEntity(client: Client): ClientEntity {
     const entity = new ClientEntity();
