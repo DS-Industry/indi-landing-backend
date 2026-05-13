@@ -29,6 +29,7 @@ export class InvitedCodeRepository implements IInvitedCodeRepository{
 
         invitedCodeUsage.invitedCode = { id: invitedCode.id } as InvitedCodeEntity;
         invitedCodeUsage.client = { clientId: user.clientId} as ClientEntity;
+        invitedCodeUsage.createAt = new Date();
 
         await this.invitedCodeUsageRepository.save(invitedCodeUsage);
 
@@ -118,9 +119,10 @@ export class InvitedCodeRepository implements IInvitedCodeRepository{
         invitedCodeEntity.maxInvited = invitedCode.maxInvited;
         invitedCodeEntity.pointToOwner = invitedCode.pointToOwner;
         invitedCodeEntity.pointToUser = invitedCode.pointToUser;
-
+        invitedCodeEntity.createAt = new Date();
+    
         return invitedCodeEntity;
-    }
+  }
 
     private generateUniqueExt() {
         const prefix = 'Indian_ref_';
