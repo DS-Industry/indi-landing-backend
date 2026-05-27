@@ -90,9 +90,10 @@ export class OtpRepository implements IOtpRepository{
         otpEntity.phone = otp.phone;
         otpEntity.expireDate = otp.expireDate;
         otpEntity.registration = otp.registration;
-
+        otpEntity.createDate = new Date();
+    
         return otpEntity;
-    }
+  }
 
     private setParams(email: string, otp: string) {
         const params = new FormData();

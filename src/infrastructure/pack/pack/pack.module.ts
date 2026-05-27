@@ -8,9 +8,11 @@ import {PackUsecase} from "../../../aplication/usecases/pack/pack.usecase";
 import {RemainsRepositoryProvider} from "../remains/provider/remains-repository.provider";
 import {RemainsPackEntity} from "../remains/entity/remains-pack.entity";
 import {AccountModule} from "../../account/account.module";
+import { BonusOperTypeEntity } from "src/infrastructure/account/entity/bonus-oper-type.entity";
+import { BonusOperEntity } from "src/infrastructure/account/entity/bonus-oper.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([PackEntity, PackUsageEntity, RemainsPackEntity]), AccountModule],
+    imports: [TypeOrmModule.forFeature([PackEntity, PackUsageEntity, RemainsPackEntity, BonusOperEntity, BonusOperTypeEntity]), AccountModule],
     controllers: [PackController],
     providers: [
         PackRepositoryProvider,

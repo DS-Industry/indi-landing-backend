@@ -24,17 +24,6 @@ export class AccountUsecase {
     private readonly bcryptService: IBcrypt,
   ) {}
 
-  async getCardTariff(client: Client): Promise<TariffResponseDto> {
-    const card = client.getCard();
-    const tariff = await this.accountRepository.findCardTariff(card);
-
-    if (!tariff) throw new AccountNotFoundExceptions(client.correctPhone);
-
-    return {
-      cashBack: tariff.bonus,
-    };
-  }
-
   async getEmail(client: Client): Promise<string> {
     const otp = await this.otpRepository.findOnePhone(client.phone);
     return otp.email;
@@ -49,7 +38,7 @@ export class AccountUsecase {
     const updatedClient = await this.accountRepository.update(client);
 
     if (!updatedClient)
-      throw new AccountNotFoundExceptions(client.correctPhone);
+      throw new AccountNotFoundExceptions(client.phone);
 
     return updatedClient;
   }
@@ -89,7 +78,7 @@ export class AccountUsecase {
     await this.otpRepository.removeOne(email);
     const newOtp = await this.otpRepository.create(otp);
     await this.otpRepository.send(newOtp);
-
+    
     if (!newOtp) {
       throw new OtpInternalExceptions(email, otp.otp);
     }

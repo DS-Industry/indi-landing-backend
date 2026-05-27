@@ -1,7 +1,6 @@
 import { Card } from '../card/model/card';
 import { Client } from '../client/model/client';
 import { ICreateClientDto } from '../client/dto/create-client.dto';
-import { Tariff } from '../card/model/tariff';
 import {Password} from "../password/model/password";
 
 export abstract class IAccountRepository {
@@ -19,7 +18,6 @@ export abstract class IAccountRepository {
   abstract changeTypeCard(cardId: number, newCardTypeId: number): Promise<any>;
   abstract changePassword(password: Password, newPassword: string): Promise<any>;
   abstract setRefreshToken(phone: string, token: string): Promise<any>;
-  abstract findCardTariff(card: Card): Promise<Tariff>;
   abstract zeroingOut(card: Card, minusPoint: number): Promise<any>;
   abstract getInvitedCode(client: Client): Promise<any>;
   abstract applyInvitedCode(invitedCode: string, phoneClient: string): Promise<any>;

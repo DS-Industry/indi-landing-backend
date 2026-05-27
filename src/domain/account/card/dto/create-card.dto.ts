@@ -1,10 +1,11 @@
-import { Client } from '../../client/model/client';
-import { CardType } from '../enum/card-type.enum';
+export type CardType = 'VIRTUAL' | 'PHYSICAL';
 
 export interface ICreateCardDto {
   clientId: number;
   nomer: string;
   devNomer: string;
-  cardTypeId: CardType;
+  cardType: CardType;
   beginDate: Date;
+  monthLimit?: number | null;
+  cardTierId?: number | null;
 }
