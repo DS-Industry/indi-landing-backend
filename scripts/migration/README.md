@@ -33,6 +33,9 @@ Target (Postgres):
 - `POSTGRES_USER` (or `DB_USERNAME`)
 - `POSTGRES_PASSWORD` (or `DB_PASSWORD`)
 - `POSTGRES_DATABASE` (or `DB_DATABASE`)
+- `DATABASE_URL` (optional; TLS on by default, use `?sslmode=disable` for local)
+- `DB_SSL=disable` for local Postgres without TLS (managed/Odyssey uses TLS by default)
+- `DB_SSL_REJECT_UNAUTHORIZED=true` to verify server certificate (optional)
 
 Script options:
 

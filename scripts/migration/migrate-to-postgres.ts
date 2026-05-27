@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { DataSource } from 'typeorm';
+import { resolvePostgresSslFromEnv } from '../../src/infrastructure/database/postgres-ssl';
 
 type SqlType = 'varchar' | 'text' | 'integer' | 'float' | 'boolean' | 'timestamp';
 
@@ -259,16 +260,31 @@ function getDataSources(): { source: DataSource; target: DataSource } {
     synchronize: false,
   });
 
-  const target = new DataSource({
-    type: 'postgres',
-    host: process.env.POSTGRES_HOST || process.env.DB_HOST,
-    port: Number(process.env.POSTGRES_PORT || process.env.DB_PORT),
-    username: process.env.POSTGRES_USER || process.env.DB_USERNAME,
-    password: process.env.POSTGRES_PASSWORD || process.env.DB_PASSWORD,
-    database: process.env.POSTGRES_DATABASE || process.env.DB_DATABASE,
-    synchronize: false,
-    ssl: false,
+  const databaseUrl = process.env.DATABASE_URL?.trim();
+  const ssl = resolvePostgresSslFromEnv({
+    dbSsl: process.env.DB_SSL,
+    postgresSsl: process.env.POSTGRES_SSL,
+    dbSslRejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED,
+    databaseUrl,
   });
+
+  const target = databaseUrl
+    ? new DataSource({
+        type: 'postgres',
+        url: databaseUrl,
+        synchronize: false,
+        ssl,
+      })
+    : new DataSource({
+        type: 'postgres',
+        host: process.env.POSTGRES_HOST || process.env.DB_HOST,
+        port: Number(process.env.POSTGRES_PORT || process.env.DB_PORT),
+        username: process.env.POSTGRES_USER || process.env.DB_USERNAME,
+        password: process.env.POSTGRES_PASSWORD || process.env.DB_PASSWORD,
+        database: process.env.POSTGRES_DATABASE || process.env.DB_DATABASE,
+        synchronize: false,
+        ssl,
+      });
 
   return { source, target };
 }

@@ -39,7 +39,7 @@ Validate:
 
 ## 5) Switch application to Postgres
 
-- Set target env variables (`DB_HOST/DB_PORT/DB_USERNAME/DB_PASSWORD/DB_DATABASE`).
+- Set target env variables (`DB_HOST/DB_PORT/DB_USERNAME/DB_PASSWORD/DB_DATABASE` or `DATABASE_URL`; TLS is on by default for managed Postgres).
 - Keep `DB_FEATURE_STUB_TRANSACTIONS=true` for first launch.
 - Deploy and restart service.
 
