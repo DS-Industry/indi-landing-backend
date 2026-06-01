@@ -151,14 +151,14 @@ export class Client {
       status,
       genderId,
       refreshToken,
-      cards,
+      cardPhysicals,
       password,
       subscribe,
     } = entity;
 
     const clientTypeId: ClientType = contractType === 'CORPORATE' ? ClientType.CORPORATE : ClientType.INDIVIDUAL;
 
-    const cardModels = cards?.map(cardEntity => Card.fromEntity(cardEntity));
+    const cardModels = cardPhysicals?.map((cardEntity) => Card.fromEntity(cardEntity));
     const passwordModel = password ? Password.fromEntity(password) : undefined;
     const subscribeModel = subscribe ? Subscribe.fromEntity(subscribe) : undefined;
 

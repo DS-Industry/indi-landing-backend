@@ -31,8 +31,8 @@ The goal is runtime compatibility without business-logic rewrites.
   - index on `CLIENT_ID` (PK)
   - optional unique on `PHONE` / `EMAIL` only if current data satisfies it
   - `INS_DATE` must exist (`orderBy('INS_DATE', 'DESC')`)
-- `CRDCARD`
-  - index on `CLIENT_ID`
+- `CRDCARD` / `LTYCard`
+  - index on `clientPhysicalId`
   - index on `DEV_NOMER`
   - index on `NOMER`
 - `CRDCARD_TYPE`

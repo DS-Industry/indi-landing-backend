@@ -10,7 +10,7 @@ export class Card {
   status: CardStatus;
   cardType: CardType;
   dateBegin: Date;
-  clientId?: number;
+  clientPhysicalId?: number;
   devNomer: string;
   nomer: string;
   monthLimit: number | null;
@@ -24,20 +24,20 @@ export class Card {
     dateBegin: Date,
     {
       cardId,
-      clientId,
+      clientPhysicalId,
       status,
       monthLimit,
       cardTierId,
     }: {
       cardId?: number;
-      clientId?: number;
+      clientPhysicalId?: number;
       status?: CardStatus;
       monthLimit?: number | null;
       cardTierId?: number | null;
     },
   ) {
     this.cardId = cardId;
-    this.clientId = clientId;
+    this.clientPhysicalId = clientPhysicalId;
     this.balance = balance;
     this.status = status ?? 'ACTIVE';
     this.cardType = cardType;
@@ -49,17 +49,17 @@ export class Card {
   }
 
   public static create(data: ICreateCardDto): Card {
-    const { clientId, nomer, devNomer, cardType, beginDate, monthLimit, cardTierId } = data;
+    const { clientPhysicalId, nomer, devNomer, cardType, beginDate, monthLimit, cardTierId } = data;
     const balance = 0;
     return new Card(cardType, nomer, devNomer, balance, beginDate, {
-      clientId,
+      clientPhysicalId,
       monthLimit,
       cardTierId,
     });
   }
 
-  public addClientId(clientId: number): void {
-    if (!this.clientId) this.clientId = clientId;
+  public addClientPhysicalId(clientPhysicalId: number): void {
+    if (!this.clientPhysicalId) this.clientPhysicalId = clientPhysicalId;
   }
 
   public lock(): void {
@@ -96,15 +96,16 @@ export class Card {
       balance,
       status,
       dateBegin,
-      client,
+      clientPhysical,
+      clientPhysicalId,
       cardType,
       devNomer,
       nomer,
       monthLimit,
       cardTierId,
     } = entity;
-  
-    const card = new Card(
+
+    return new Card(
       cardType as CardType,
       nomer,
       devNomer,
@@ -112,17 +113,15 @@ export class Card {
       dateBegin,
       {
         cardId,
-        clientId: client?.clientId,
-        status: status === null ? 'ACTIVE' : status as CardStatus,
+        clientPhysicalId: clientPhysicalId ?? clientPhysical?.clientId ?? undefined,
+        status: status === null ? 'ACTIVE' : (status as CardStatus),
         monthLimit,
         cardTierId,
       },
     );
-
-    return card;
   }
 
-  public toEntity(): Omit<CardEntity, 'client'> {
+  public toEntity(): Omit<CardEntity, 'clientPhysical'> {
     const entity = new CardEntity();
     entity.cardId = this.cardId;
     entity.balance = this.balance;

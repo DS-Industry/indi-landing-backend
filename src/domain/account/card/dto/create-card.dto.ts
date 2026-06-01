@@ -1,7 +1,7 @@
 export type CardType = 'VIRTUAL' | 'PHYSICAL';
 
 export interface ICreateCardDto {
-  clientId: number;
+  clientPhysicalId: number;
   nomer: string;
   devNomer: string;
   cardType: CardType;

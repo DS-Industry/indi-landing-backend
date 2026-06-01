@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, RelationId } from 'typeorm';
 import { ClientEntity } from './client.entity';
 
 @Entity({ name: 'LTYCard', synchronize: false })
@@ -15,9 +15,12 @@ export class CardEntity {
   @Column({ name: 'createdAt', type: 'timestamp', nullable: true })
   dateBegin: Date;
 
-  @ManyToOne(() => ClientEntity, (client) => client.cards)
-  @JoinColumn({ name: 'clientId' })
-  client: ClientEntity;
+  @ManyToOne(() => ClientEntity, (client) => client.cardPhysicals)
+  @JoinColumn({ name: 'clientPhysicalId', referencedColumnName: 'clientId' })
+  clientPhysical: ClientEntity;
+
+  @RelationId((card: CardEntity) => card.clientPhysical)
+  clientPhysicalId: number | null;
 
   @Column({ name: 'type', type: 'varchar', length: 20 })
   cardType: string;             // 'VIRTUAL' или 'PHYSICAL'

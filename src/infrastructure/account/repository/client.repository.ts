@@ -17,14 +17,18 @@ export class ClientRepository implements IClientRepository {
     const clientEntity = this.toClientEntity(client);
     clientEntity.insDate = clientEntity.insDate || new Date();
     clientEntity.updDate = clientEntity.updDate || new Date();
-    const newClient = await this.clientRepository.save(clientEntity);
-    return Client.fromEntity(newClient);
+    clientEntity.placementId = 51;
+    const saved = await this.clientRepository.save(clientEntity);
+    const reloaded = await this.clientRepository.findOne({
+      where: { clientId: saved.clientId },
+    });
+    return reloaded ? Client.fromEntity(reloaded) : Client.fromEntity(saved);
   }
 
   async findOneByPhone(phone: string): Promise<Client | null> {
     const clientEntity = await this.clientRepository
       .createQueryBuilder('client')
-      .leftJoinAndSelect('client.cards', 'cards')
+      .leftJoinAndSelect('client.cardPhysicals', 'cardPhysicals')
       .where('client.phone = :phone', { phone })
       .orderBy('client.insDate', 'DESC')
       .getOne();
@@ -35,7 +39,7 @@ export class ClientRepository implements IClientRepository {
   async findOneById(clientId: number): Promise<Client | null> {
     const clientEntity = await this.clientRepository
       .createQueryBuilder('client')
-      .leftJoinAndSelect('client.cards', 'cards')
+      .leftJoinAndSelect('client.cardPhysicals', 'cardPhysicals')
       .where('client.clientId = :clientId', { clientId })
       .orderBy('client.insDate', 'DESC')
       .getOne();

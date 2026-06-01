@@ -21,7 +21,7 @@ export class CardRepository implements ICardRepository {
   ) {}
   async create(card: Card, client: Client): Promise<Card> {
     const cardEntity = this.toCardEntity(card);
-    cardEntity.client = ClientRepository.toClientEntity(client);
+    cardEntity.clientPhysical = ClientRepository.toClientEntity(client);
 
     const savedEntity = await this.cardRepository.save(cardEntity);
     return Card.fromEntity(savedEntity);
@@ -39,20 +39,20 @@ export class CardRepository implements ICardRepository {
     await this.cardRepository.update(cardId, { status: null });
   }
 
-  async findByClientId(clientId: number): Promise<Card[]> {
+  async findByClientPhysicalId(clientPhysicalId: number): Promise<Card[]> {
     const cards = await this.cardRepository
       .createQueryBuilder('card')
-      .leftJoinAndSelect('card.client', 'client')
-      .where('client.clientId = :clientId', { clientId })
+      .leftJoinAndSelect('card.clientPhysical', 'clientPhysical')
+      .where('card.clientPhysicalId = :clientPhysicalId', { clientPhysicalId })
       .getMany();
 
-    return cards.map(cardEntity => Card.fromEntity(cardEntity));
+    return cards.map((cardEntity) => Card.fromEntity(cardEntity));
   }
 
   async findOneByDevNomer(devNomer: string): Promise<Card | null> {
     const cardEntity = await this.cardRepository.findOne({
       where: { devNomer },
-      relations: ['client'],
+      relations: ['clientPhysical'],
     });
     return cardEntity ? Card.fromEntity(cardEntity) : null;
   }
@@ -60,7 +60,7 @@ export class CardRepository implements ICardRepository {
   async findOneByNomer(nomer: string): Promise<Card | null> {
     const cardEntity = await this.cardRepository.findOne({
       where: { nomer },
-      relations: ['client'],
+      relations: ['clientPhysical'],
     });
     return cardEntity ? Card.fromEntity(cardEntity) : null;
   }
@@ -75,11 +75,13 @@ export class CardRepository implements ICardRepository {
   }
 
   async changeClient(cardId: number, client: Client): Promise<Card | null> {
+    if (client.clientId == null) return null;
+
     const clientEntity = ClientRepository.toClientEntity(client);
     const cardEntity = await this.cardRepository.findOne({ where: { cardId } });
     if (!cardEntity) return null;
 
-    cardEntity.client = clientEntity;
+    cardEntity.clientPhysical = clientEntity;
     const updated = await this.cardRepository.save(cardEntity);
     return Card.fromEntity(updated);
   }

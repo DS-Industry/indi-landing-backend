@@ -21,6 +21,9 @@ export class ClientEntity {
   @Column({ name: 'phone', type: 'varchar', unique: true })
   phone: string;                     // будет маппиться на correctPhone в домене
 
+  @Column({ name: 'placementId', type: 'int', nullable: true })
+  placementId: number;
+
   @Column({ name: 'birthday', type: 'date', nullable: true })
   birthday: Date;
 
@@ -49,8 +52,8 @@ export class ClientEntity {
   refreshToken: string;
 
   // Связи (имена полей оставляем как в старом домене)
-  @OneToMany(() => CardEntity, (card) => card.client)
-  cards: CardEntity[];               // → cardPhysicals
+  @OneToMany(() => CardEntity, (card) => card.clientPhysical)
+  cardPhysicals: CardEntity[];
 
   @OneToOne(() => PasswordEntity, (password) => password.client)
   password: PasswordEntity;

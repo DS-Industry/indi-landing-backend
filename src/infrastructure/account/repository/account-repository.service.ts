@@ -36,7 +36,7 @@ export class AccountRepository implements IAccountRepository {
     const client: Client = Client.create(clientData);
     const newClient = await this.clientRepository.create(client);
 
-    card.addClientId(client.clientId);
+    card.addClientPhysicalId(newClient.clientId);
 
     const newCard = await this.cardRepository.changeClient(card.cardId, newClient);
 

@@ -65,7 +65,7 @@ export class AuthUsecase {
       throw new InvalidPasswordException(phone);
     }
     const card = await this.accountRepository.findOneByNomer(uniqNomer);
-    if (card.clientId) {
+    if (card.clientPhysicalId) {
       throw new InvalidOtpException(uniqNomer);
     }
     //Generate token
@@ -212,7 +212,7 @@ export class AuthUsecase {
     if(!card){
       throw new CardNotFoundExceptions(uniqNomer);
     }
-    if(card.clientId !== null && card.clientId !== undefined){
+    if (card.clientPhysicalId != null) {
       throw new CardHasClientExceptions(uniqNomer);
     }
     //Check if user already exists
