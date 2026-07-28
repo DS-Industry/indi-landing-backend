@@ -23,11 +23,13 @@ export class PackController {
         }
     }
 
+    @UseGuards(JwtGuard)
     @Get()
     @HttpCode(201)
-    async getAll(): Promise<any> {
+    async getAll(@Request() req: any): Promise<any> {
         try {
-            return await this.packUsecase.getAll();
+            const { user } = req;
+            return await this.packUsecase.getAll(user);
         } catch (e) {
             throw new CustomHttpException({
                 message: e.message,

@@ -14,6 +14,8 @@ import {OTP_EXPIRY_TIME} from "../../../infrastructure/common/constants/constant
 import {InvalidOtpException} from "../../../domain/auth/exceptions/invalid-otp.exception";
 import {InvalidPasswordException} from "../../../domain/auth/exceptions/invalid-password.exception";
 import {IBcrypt} from "../../../domain/auth/adapters/bcrypt.interface";
+import {IRemainsRepository} from "../../../domain/pack/remains/interface/remains-repository.interface";
+import {BurnablePointDto} from "../../../domain/account/card/dto/short-card.dto";
 
 @Injectable()
 export class AccountUsecase {
@@ -22,6 +24,7 @@ export class AccountUsecase {
     private readonly otpRepository: IOtpRepository,
     private readonly dateService: IDate,
     private readonly bcryptService: IBcrypt,
+    private readonly remainsRepository: IRemainsRepository,
   ) {}
 
   async getEmail(client: Client): Promise<string> {
@@ -95,6 +98,14 @@ export class AccountUsecase {
     const clients = await this.accountRepository.getAllInviteUsageClientByCodeId(inviteCode.id);
 
     return clients.map((client: Client) => client.name);
+  }
+
+  public async getBurnablePointsByCardId(cardId: number): Promise<BurnablePointDto[]> {
+    const remains = await this.remainsRepository.findBurnableByCardId(cardId);
+    return remains.map((item) => ({
+      sum: item.remainsPoint,
+      burnDate: item.burnDate ?? null,
+    }));
   }
 
   private generateOtp() {

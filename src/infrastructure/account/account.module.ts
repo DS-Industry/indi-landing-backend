@@ -19,6 +19,8 @@ import {InvitedCodeUsageEntity} from "./entity/invitedCodeUsage.entity";
 import { BonusOperEntity } from './entity/bonus-oper.entity';
 import { BonusOperTypeEntity } from './entity/bonus-oper-type.entity';
 import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create-card-bonus-oper.use-case';
+import { RemainsPackEntity } from '../pack/remains/entity/remains-pack.entity';
+import { RemainsRepositoryProvider } from '../pack/remains/provider/remains-repository.provider';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create
       InvitedCodeUsageEntity,
       BonusOperEntity,
       BonusOperTypeEntity,
+      RemainsPackEntity,
     ]),
     DateModule,
     OtpModule,
@@ -44,7 +47,8 @@ import { CreateCardBonusOperUseCase } from 'src/aplication/usecases/bonus/create
     PasswordRepository,
     InvitedCodeRepository,
     AccountUsecase,
-    CreateCardBonusOperUseCase
+    CreateCardBonusOperUseCase,
+    RemainsRepositoryProvider,
   ],
   exports: [AccountRepositoryProvider, CardRepository, CreateCardBonusOperUseCase],
 })

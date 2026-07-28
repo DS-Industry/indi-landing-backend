@@ -3,9 +3,9 @@ import {IRemainsRepository} from "../../../../domain/pack/remains/interface/rema
 import {InjectRepository} from "@nestjs/typeorm";
 import {RemainsPackEntity} from "../entity/remains-pack.entity";
 import {Repository} from "typeorm";
-import {Client} from "../../../../domain/account/client/model/client";
+import {Card} from "../../../../domain/account/card/model/card";
 import {Remains} from "../../../../domain/pack/remains/model/remains.model";
-import {ClientEntity} from "../../../account/entity/client.entity";
+import {CardEntity} from "../../../account/entity/card.entity";
 
 @Injectable()
 export class RemainsRepository implements IRemainsRepository{
@@ -14,20 +14,21 @@ export class RemainsRepository implements IRemainsRepository{
         private readonly remainsRepository: Repository<RemainsPackEntity>,
     ) {}
 
-    async create(remainsPoint: number, client: Client): Promise<Remains> {
+    async create(remainsPoint: number, card: Card, burnDate?: Date): Promise<Remains> {
         const remainsEntity: RemainsPackEntity = new RemainsPackEntity();
 
         remainsEntity.remainsPoint = remainsPoint;
-        remainsEntity.client = { clientId: client.clientId} as ClientEntity;
+        remainsEntity.card = { cardId: card.cardId} as CardEntity;
+        remainsEntity.burnDate = burnDate ?? null;
 
         const newRemains = await this.remainsRepository.save(remainsEntity);
         return Remains.fromEntity(newRemains);
     }
 
-    async findOneByClientId(clientId: number): Promise<Remains> {
+    async findOneByCardId(cardId: number): Promise<Remains> {
         const remains = await this.remainsRepository.createQueryBuilder('remains')
-            .leftJoinAndSelect('remains.client', 'client')
-            .where('client.clientId = :clientId', { clientId })
+            .leftJoinAndSelect('remains.card', 'card')
+            .where('card.cardId = :cardId', { cardId })
             .getOne();
 
         if(!remains) return null;
@@ -35,11 +36,22 @@ export class RemainsRepository implements IRemainsRepository{
         return Remains.fromEntity(remains);
     }
 
+    async findBurnableByCardId(cardId: number): Promise<Remains[]> {
+        const remains = await this.remainsRepository.createQueryBuilder('remains')
+            .leftJoinAndSelect('remains.card', 'card')
+            .where('card.cardId = :cardId', { cardId })
+            .andWhere('remains.remainsPoint > 0')
+            .getMany();
+
+        return remains.map((item) => Remains.fromEntity(item));
+    }
+
     async findOneById(remainsId: number): Promise<Remains> {
         const remains = await this.remainsRepository.findOne({
             where: {
                 id: remainsId,
             },
+            relations: ['card'],
         });
 
         if(!remains) return null;
@@ -47,16 +59,20 @@ export class RemainsRepository implements IRemainsRepository{
         return Remains.fromEntity(remains);
     }
 
-    async updateRemainsPoint(remainsId: number, remainsPoint: number): Promise<Remains> {
+    async updateRemainsPoint(remainsId: number, remainsPoint: number, burnDate?: Date): Promise<Remains> {
         const remains = await this.remainsRepository.findOne({
             where: {
                 id: remainsId,
             },
+            relations: ['card'],
         });
 
         if(!remains) return null;
         remains.remainsPoint = remainsPoint;
+        if (burnDate !== undefined) {
+            remains.burnDate = burnDate;
+        }
         await this.remainsRepository.save(remains);
-        return remains;
+        return Remains.fromEntity(remains);
     }
 }

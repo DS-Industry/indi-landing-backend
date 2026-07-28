@@ -3,7 +3,6 @@ import { CardEntity } from './card.entity';
 import { PasswordEntity } from './password.entity';
 import { SubscribeEntity } from '../../subscribe/entity/subscribe.entity';
 import { PackUsageEntity } from '../../pack/pack/entity/pack-usage.entity';
-import { RemainsPackEntity } from '../../pack/remains/entity/remains-pack.entity';
 import { InvitedCodeEntity } from './invitedCode.entity';
 import { InvitedCodeUsageEntity } from './invitedCodeUsage.entity';
 
@@ -63,9 +62,6 @@ export class ClientEntity {
 
   @OneToOne(() => PackUsageEntity, (packUsage) => packUsage.client)
   packUsage: PackUsageEntity;
-
-  @OneToOne(() => RemainsPackEntity, (remainsPack) => remainsPack.client)
-  remainsPack: RemainsPackEntity;
 
   @OneToOne(() => InvitedCodeEntity, (invitedCode) => invitedCode.client)
   invitedCode: InvitedCodeEntity;

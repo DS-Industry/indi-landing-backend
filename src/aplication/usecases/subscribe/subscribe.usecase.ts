@@ -1,5 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {ISubscribeRepository} from "../../../domain/subscribe/interface/subscribe-repository.interface";
+import {ISubscribeMinRepository} from "../../../domain/subscribe/interface/subscribe-min-repository.interface";
 import {Client} from "../../../domain/account/client/model/client";
 import {CreateSubscribeDto} from "../../../api/subscribe/dto/create-subscribe.dto";
 import {ConfigService} from "@nestjs/config";
@@ -16,6 +17,7 @@ export class SubscribeUsecase {
     constructor(
         private readonly accountRepository: IAccountRepository,
         private readonly subscribeRepository: ISubscribeRepository,
+        private readonly subscribeMinRepository: ISubscribeMinRepository,
         private readonly configService: ConfigService,
         private readonly remainsRepository: IRemainsRepository,
     ) {}
@@ -69,7 +71,7 @@ export class SubscribeUsecase {
 
         await this.subscribeRepository.update(oldSubscribe, client);
         console.log("Update db: " + subscribe.subscribeId)
-        const remains = await this.remainsRepository.findOneByClientId(client.clientId);
+        const remains = await this.remainsRepository.findOneByCardId(card.cardId);
         let minusPoint = card.balance;
         if(remains){
             minusPoint = card.balance - remains.remainsPoint;
@@ -78,8 +80,9 @@ export class SubscribeUsecase {
         await this.accountRepository.zeroingOut(card, minusPoint);
         console.log("Zeroing out: " + card.nomer)
         let amount = subscribe.amount;
-        if(subscribe.amount === 1345){
-            amount = 1950;
+        const subscribeMin = await this.subscribeMinRepository.findBySumMoney(subscribe.amount);
+        if (subscribeMin) {
+            amount = subscribeMin.sumPoint;
         }
         await this.subscribeRepository.replenishment(subscribe, amount, client, card);
         console.log("Replenishment: " + card.nomer)
@@ -94,7 +97,7 @@ export class SubscribeUsecase {
             subscribe.dateDebiting = null;
             await this.subscribeRepository.update(subscribe, client);
             console.log("Change status " + subscribe.subscribeId + " closed")
-            const remains = await this.remainsRepository.findOneByClientId(client.clientId);
+            const remains = await this.remainsRepository.findOneByCardId(card.cardId);
             let minusPoint = card.balance;
             if(remains){
                 minusPoint = card.balance - remains.remainsPoint;
@@ -112,7 +115,27 @@ export class SubscribeUsecase {
             key_secret: this.configService.get<string>('rp.key_secret'),
         });
 
-        return instance.plans.all()
+        const data = await instance.plans.all();
+        const subscribeMins = await this.subscribeMinRepository.getAll();
+        const sumPointByPaise = new Map(
+            subscribeMins.map((item) => [item.sumMoney * 100, item.sumPoint]),
+        );
+
+        return data.items.map((item) => {
+            let fullPrice = sumPointByPaise.get(item.item.amount);
+            if (fullPrice === undefined) {
+                const roundedPrice = Math.ceil(item.item.amount / 60);
+                let roundedPriceStr = roundedPrice.toString();
+                roundedPriceStr = roundedPriceStr.slice(0, -1) + '0';
+                fullPrice = parseFloat(roundedPriceStr);
+            }
+            return {
+                id: item.id,
+                name: item.item.name,
+                amount: item.item.amount,
+                fullPrice: fullPrice,
+            };
+        });
     }
 
     async getSubscribeInfo(client: Client){

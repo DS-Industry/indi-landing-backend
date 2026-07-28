@@ -7,6 +7,9 @@ export class Pack {
     description?: string;
     sumMoney: number;
     sumPoint: number;
+    isBurnable: boolean;
+    isVisible: boolean;
+    lifetimeDays?: number;
 
     private constructor(
         name: string,
@@ -15,9 +18,15 @@ export class Pack {
         {
             id,
             description,
+            isBurnable,
+            isVisible,
+            lifetimeDays,
         }: {
             id?: number;
             description?: string;
+            isBurnable?: boolean;
+            isVisible?: boolean;
+            lifetimeDays?: number;
         },
     ) {
         this.id = id;
@@ -25,12 +34,15 @@ export class Pack {
         this.description = description;
         this.sumMoney = sumMoney;
         this.sumPoint = sumPoint;
+        this.isBurnable = isBurnable ?? false;
+        this.isVisible = isVisible ?? false;
+        this.lifetimeDays = lifetimeDays;
     }
 
     public static create(data: AddPackDto): Pack {
-        const { name, description, sumMoney, sumPoint } = data;
+        const { name, description, sumMoney, sumPoint, isBurnable, isVisible, lifetimeDays } = data;
         return new Pack(
-            name, sumMoney, sumPoint, {description},
+            name, sumMoney, sumPoint, {description, isBurnable, isVisible, lifetimeDays},
         );
     }
 
@@ -40,14 +52,17 @@ export class Pack {
             name,
             description,
             sumMoney,
-            sumPoint
+            sumPoint,
+            isBurnable,
+            isVisible,
+            lifetimeDays,
         } = entity;
 
         return new Pack(
             name,
             sumMoney,
             sumPoint,
-            {id, description},
+            {id, description, isBurnable, isVisible, lifetimeDays},
         );
     }
 }

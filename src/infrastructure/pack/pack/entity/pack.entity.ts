@@ -18,6 +18,15 @@ export class PackEntity {
   @Column({ name: 'SUM_POINT', type: 'int' })
   sumPoint: number;
 
+  @Column({ name: 'IS_BURNABLE', type: 'boolean', default: false })
+  isBurnable: boolean;
+
+  @Column({ name: 'IS_VISIBLE', type: 'boolean', default: false })
+  isVisible: boolean;
+
+  @Column({ name: 'LIFETIME_DAYS', type: 'int', nullable: true })
+  lifetimeDays: number;
+
   @OneToOne(() => PackUsageEntity, (packUsage) => packUsage.pack)
   packUsage: PackUsageEntity;
 }

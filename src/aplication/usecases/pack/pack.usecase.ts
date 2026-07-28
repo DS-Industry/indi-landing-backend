@@ -22,8 +22,19 @@ export class PackUsecase {
         return await this.packRepository.create(body);
     }
 
-    async getAll(): Promise<Pack[]> {
-        return await this.packRepository.getAll();
+    async getAll(client: Client): Promise<Pack[]> {
+        const packs = await this.packRepository.getAll();
+        const card = client.getCard();
+        if (!card) {
+            return packs;
+        }
+
+        const remains = await this.remainsRepository.findOneByCardId(card.cardId);
+        if (!remains) {
+            return packs;
+        }
+
+        return packs.filter((pack) => !pack.isBurnable);
     }
 
     async getLastOperDateByClient(client: Client): Promise<Date> {
@@ -73,15 +84,16 @@ export class PackUsecase {
         if (expectedSignature === data.response.razorpay_signature) {
             response = {'signatureIsValid': 'true'}
 
-            const remains = await this.remainsRepository.findOneByClientId(client.clientId);
-            if (!remains) {
-               await this.remainsRepository.create(pack.sumPoint, client);
-            } else {
-                const upPoint = remains.remainsPoint + pack.sumPoint;
-                await this.remainsRepository.updateRemainsPoint(remains.id, upPoint);
+            const card = client.getCard();
+
+            if (pack.isBurnable) {
+                const lifetimeDays = pack.lifetimeDays ?? 30;
+                const burnDate = new Date();
+                burnDate.setDate(burnDate.getDate() + lifetimeDays);
+
+                await this.remainsRepository.create(pack.sumPoint, card, burnDate);
             }
 
-            const card = client.getCard();
             await this.packRepository.apply(pack, client, card, data.response.razorpay_payment_id);
 
         } else

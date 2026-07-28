@@ -1,0 +1,27 @@
+---
+description: Сохранять слои NestJS Clean Architecture проекта
+alwaysApply: true
+---
+
+# Архитектура проекта
+
+Слои (не менять границы без согласования):
+
+- `src/api` — controllers, request/response DTO
+- `src/aplication` — usecases (бизнес-сценарии)
+- `src/domain` — модели, интерфейсы/абстракции репозиториев, domain exceptions, enums
+- `src/infrastructure` — TypeORM entities, repositories, providers, modules, guards, strategies, services
+
+## Правила размещения
+
+- Controller не ходит в TypeORM/entity напрямую — только через usecase.
+- Usecase зависит от абстракций из `domain`, не от concrete repository classes.
+- Entity и SQL/TypeORM — только в `infrastructure`.
+- Domain exceptions и enums не переносить в api/infrastructure без причины.
+- Новые фичи добавлять по существующим модулям: `Auth`, `Account`, `Order`, `Subscribe`, `Pack`, `Otp`.
+
+## Стиль кода
+
+- Следовать паттернам соседних файлов (DI через abstract/interface + provider).
+- Не оставлять комментарии в коде.
+- Не вводить новые библиотеки без необходимости и согласования.

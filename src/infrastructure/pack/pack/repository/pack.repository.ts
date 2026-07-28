@@ -56,6 +56,9 @@ export class PackRepository implements IPackRepository{
         packEntity.description = data.description ? data.description : null;
         packEntity.sumPoint = data.sumPoint;
         packEntity.sumMoney = data.sumMoney;
+        packEntity.isBurnable = data.isBurnable ?? false;
+        packEntity.isVisible = data.isVisible ?? false;
+        packEntity.lifetimeDays = data.lifetimeDays ?? null;
 
         const newPack = await this.packRepository.save(packEntity);
         return Pack.fromEntity(newPack);
@@ -65,6 +68,7 @@ export class PackRepository implements IPackRepository{
         const pack = await this.packRepository.findOne({
             where: {
                 id: packId,
+                isVisible: true,
             },
         });
 
@@ -88,7 +92,14 @@ export class PackRepository implements IPackRepository{
     }
 
    async getAll(): Promise<Pack[]> {
-        const packs = await this.packRepository.find();
+        const packs = await this.packRepository.find({
+            where: {
+                isVisible: true,
+            },
+            order: {
+                id: 'ASC',
+            },
+        });
         return packs.map(pack => Pack.fromEntity(pack));
     }
 
@@ -116,6 +127,9 @@ export class PackRepository implements IPackRepository{
         packEntity.description = pack.description ? pack.description : null;
         packEntity.sumMoney = pack.sumMoney ? pack.sumMoney : null;
         packEntity.sumPoint = pack.sumPoint ? pack.sumPoint : null;
+        packEntity.isBurnable = pack.isBurnable ?? false;
+        packEntity.isVisible = pack.isVisible ?? false;
+        packEntity.lifetimeDays = pack.lifetimeDays ?? null;
 
         return packEntity;
     }

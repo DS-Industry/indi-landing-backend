@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, RelationId } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, RelationId } from 'typeorm';
 import { ClientEntity } from './client.entity';
+import { RemainsPackEntity } from '../../pack/remains/entity/remains-pack.entity';
 
 @Entity({ name: 'LTYCard', synchronize: false })
 export class CardEntity {
@@ -36,4 +37,7 @@ export class CardEntity {
 
   @Column({ name: 'cardTierId', type: 'int', nullable: true })
   cardTierId: number | null;
+
+  @OneToMany(() => RemainsPackEntity, (remainsPack) => remainsPack.card)
+  remainsPacks: RemainsPackEntity[];
 }

@@ -1,4 +1,4 @@
-import {IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
+import {IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
 
 export class AddPackDto {
     @IsString()
@@ -13,4 +13,13 @@ export class AddPackDto {
     @IsNumber()
     @IsNotEmpty({ message: 'SumPoint number is required'})
     sumPoint: number;
+    @IsBoolean()
+    @IsOptional()
+    isBurnable?: boolean;
+    @IsBoolean()
+    @IsOptional()
+    isVisible?: boolean;
+    @IsNumber()
+    @IsOptional()
+    lifetimeDays?: number;
 }

@@ -58,22 +58,7 @@ export class SubscribeController {
     @HttpCode(201)
     async getAllPlans(): Promise<any> {
         try {
-            const data = await this.subscribeUsecase.getAllPlans();
-            return data.items.map(item => {
-                let fullPrice = 1950;
-                if(item.item.amount !== 134500) {
-                    const roundedPrice = Math.ceil(item.item.amount / 60);
-                    let roundedPriceStr = roundedPrice.toString();
-                    roundedPriceStr = roundedPriceStr.slice(0, -1) + '0';
-                    fullPrice = parseFloat(roundedPriceStr);
-                }
-                return {
-                    id: item.id,
-                    name: item.item.name,
-                    amount: item.item.amount,
-                    fullPrice: fullPrice,
-                };
-            });
+            return await this.subscribeUsecase.getAllPlans();
         } catch (e) {
             throw new CustomHttpException({
                 message: e.message,

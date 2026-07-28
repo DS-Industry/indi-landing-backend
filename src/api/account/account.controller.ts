@@ -41,6 +41,8 @@ export class AccountController {
       const client = user.getAccountInfo();
       client.email = await this.accountUsecase.getEmail(user);
       client.invitedFriends = await this.accountUsecase.getAllInviteUsageClientByCodeId(user);
+      const card = user.getCard();
+      client.cards.burnablePoints = await this.accountUsecase.getBurnablePointsByCardId(card.cardId);
       return client;
     } catch (e) {
       throw new CustomHttpException({

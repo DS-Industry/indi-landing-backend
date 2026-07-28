@@ -4,6 +4,7 @@ import { ClientEntity } from '../account/entity/client.entity';
 import { CardEntity } from '../account/entity/card.entity';
 import { PasswordEntity } from '../account/entity/password.entity';
 import { SubscribeEntity } from '../subscribe/entity/subscribe.entity';
+import { SubscribeMinEntity } from '../subscribe/entity/subscribe-min.entity';
 import { OtpEntity } from '../otp/entity/otp.entity';
 import { PackEntity } from '../pack/pack/entity/pack.entity';
 import { PackUsageEntity } from '../pack/pack/entity/pack-usage.entity';
@@ -21,6 +22,7 @@ const entities = [
   InvitedCodeEntity,
   InvitedCodeUsageEntity,
   SubscribeEntity,
+  SubscribeMinEntity,
   OtpEntity,
   PackEntity,
   PackUsageEntity,

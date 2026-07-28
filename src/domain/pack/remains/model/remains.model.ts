@@ -1,44 +1,44 @@
 import {AddRemainsDto} from "../dto/add-remains.dto";
 import {RemainsPackEntity} from "../../../../infrastructure/pack/remains/entity/remains-pack.entity";
-import {Client} from "../../../account/client/model/client";
 
 export class Remains {
     id?: number;
-    clientId?: number;
+    cardId?: number;
     remainsPoint: number;
+    burnDate?: Date;
 
     private constructor(
         remainsPoint: number,
         {
             id,
-            clientId
+            cardId,
+            burnDate,
         }: {
             id?: number;
-            clientId?: number;
+            cardId?: number;
+            burnDate?: Date;
         },
     ) {
         this.id = id;
-        this.clientId = clientId;
+        this.cardId = cardId;
         this.remainsPoint = remainsPoint;
+        this.burnDate = burnDate;
     }
 
     public static create(data: AddRemainsDto): Remains {
-        const { clientId, remainsPoint } = data;
+        const { cardId, remainsPoint, burnDate } = data;
         return new Remains(
             remainsPoint,
-            {clientId},
+            {cardId, burnDate},
         );
     }
 
     public static fromEntity(entity: RemainsPackEntity): Remains {
-        const { id, client, remainsPoint, } = entity;
-
-        const clientModel = Client.fromEntity(client);
-        const clientId = clientModel.clientId;
+        const { id, card, remainsPoint, burnDate } = entity;
 
         return new Remains(
             remainsPoint,
-            { id, clientId },
+            { id, cardId: card?.cardId, burnDate },
         );
     }
 }

@@ -1,10 +1,10 @@
-import {AddRemainsDto} from "../dto/add-remains.dto";
-import {Client} from "../../../account/client/model/client";
+import {Card} from "../../../account/card/model/card";
 import {Remains} from "../model/remains.model";
 
 export abstract class IRemainsRepository{
-    abstract create(remainsPoint: number, client: Client): Promise<Remains>;
-    abstract findOneByClientId(clientId: number): Promise<Remains>;
+    abstract create(remainsPoint: number, card: Card, burnDate?: Date): Promise<Remains>;
+    abstract findOneByCardId(cardId: number): Promise<Remains>;
+    abstract findBurnableByCardId(cardId: number): Promise<Remains[]>;
     abstract findOneById(remainsId: number): Promise<Remains>;
-    abstract updateRemainsPoint(remainsId: number, remainsPoint: number): Promise<Remains>;
+    abstract updateRemainsPoint(remainsId: number, remainsPoint: number, burnDate?: Date): Promise<Remains>;
 }
