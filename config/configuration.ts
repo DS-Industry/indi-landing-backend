@@ -15,4 +15,6 @@ export const configuration = () => ({
     emailApiKey: process.env.EMAIL_API_KEY,
     emailName: process.env.EMAIL_NAME,
     emailFrom: process.env.EMAIL_FROM,
+    onviBackendUrl: process.env.ONVI_BACKEND_URL,
+    onviInternalApiKey: process.env.ONVI_INTERNAL_API_KEY,
 });

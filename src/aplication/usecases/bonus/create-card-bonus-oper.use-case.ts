@@ -1,45 +1,51 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { BonusOperTypeEntity } from 'src/infrastructure/account/entity/bonus-oper-type.entity';
-import { BonusOperEntity } from 'src/infrastructure/account/entity/bonus-oper.entity';
-import { CardRepository } from 'src/infrastructure/account/repository/card.repository';
-import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import { CreateBonusOperDto } from './dto/create-bonus-oper.dto';
 import { Card } from 'src/domain/account/card/model/card';
-import { SignOperType } from './enum/sign-oper-type.enum';
+
+interface BonusOperResponse {
+  operId: number;
+  cardId: number;
+  balance: number;
+}
 
 @Injectable()
 export class CreateCardBonusOperUseCase {
   constructor(
-    @InjectRepository(BonusOperTypeEntity)
-    private readonly operTypeRepo: Repository<BonusOperTypeEntity>,
-    @InjectRepository(BonusOperEntity)
-    private readonly operRepo: Repository<BonusOperEntity>,
-    private readonly cardRepository: CardRepository,
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async execute(input: CreateBonusOperDto, card: Card): Promise<BonusOperEntity> {
-    const operType = await this.operTypeRepo.findOne({ where: { id: input.typeOperId } });
-    if (!operType) {
-      throw new NotFoundException(`Operation type with id ${input.typeOperId} not found`);
+  async execute(input: CreateBonusOperDto, card: Card): Promise<void> {
+    if (input.sum <= 0) {
+      return;
     }
 
-    if (operType.signOper === SignOperType.DEDUCTION) {
-      card.balance -= input.sum;
-    } else {
-      card.balance += input.sum;
+    const baseUrl = this.configService.get<string>('onviBackendUrl');
+    const apiKey = this.configService.get<string>('onviInternalApiKey');
+    if (!baseUrl || !apiKey) {
+      throw new Error('ONVI_BACKEND_URL and ONVI_INTERNAL_API_KEY must be set');
     }
 
-    await this.cardRepository.update(card);
+    const response = await firstValueFrom(
+      this.httpService.post<BonusOperResponse>(
+        `${baseUrl.replace(/\/+$/, '')}/internal/card/bonus-oper`,
+        {
+          cardId: card.cardId,
+          typeOperId: input.typeOperId,
+          sum: input.sum,
+          operDate: input.operDate.toISOString(),
+          lotExpiryAt: null,
+        },
+        {
+          headers: { 'x-internal-api-key': apiKey },
+          timeout: 10000,
+        },
+      ),
+    );
 
-    const operEntity = new BonusOperEntity();
-    operEntity.cardId = card.cardId;
-    operEntity.typeId = input.typeOperId;
-    operEntity.operDate = input.operDate;
-    operEntity.loadDate = new Date();
-    operEntity.sum = input.sum;
-
-    const saved = await this.operRepo.save(operEntity);
-    return saved;
+    card.balance = response.data.balance;
   }
 }
