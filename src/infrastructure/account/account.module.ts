@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CardEntity } from './entity/card.entity';
 import { ClientEntity } from './entity/client.entity';
@@ -38,6 +39,7 @@ import { RemainsRepositoryProvider } from '../pack/remains/provider/remains-repo
     DateModule,
     OtpModule,
     BcryptModule,
+    HttpModule,
   ],
   controllers: [AccountController],
   providers: [
