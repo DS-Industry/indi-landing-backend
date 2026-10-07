@@ -38,7 +38,7 @@ export class CreateCardBonusOperUseCase {
           sum: input.sum,
           operDate: input.operDate.toISOString(),
           lotExpiryAt: null,
-          lotFundingType: 'PURCHASED'
+          // lotFundingType: 'PURCHASED'
         },
         {
           headers: { 'x-internal-api-key': apiKey },
